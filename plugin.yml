@@ -1,0 +1,68 @@
+name: Levelling
+main: com.tribescommunity.levelling.Levelling
+version: 1.2.1
+author: theguynextdoor
+softdepend: [Vault, TagAPI]
+commands:
+  levels:
+    description: stats command
+    usage: /<command>
+    aliases: [level, l]
+  levelling:
+    description: main command
+    usage: /<command>
+  class:
+    description: class command
+    usage: /<command>
+    aliases: [trade]
+  party:
+    description: party command
+    usage: /<command>
+  p:
+    description: party chat command
+    usage: /<command>
+  ptp:
+    description: part tp command
+    usage: /<command> <player>
+  mining:
+    description: mining commmand
+    usage: /<command>
+  archaeology:
+    description: archaeology commmand
+    usage: /<command>
+  archery:
+    description: archery commmand
+    usage: /<command>
+  swords:
+    description: swords command
+    usage: /<command>
+  unarmed:
+    description: unarmed command
+    usage: /<command>
+  farming:
+    description: farming command
+    usage: /<command>
+  woodcutting:
+    description: woodcutting command
+    usage: /<command>
+  enchanting:
+    description: enchanting command
+    usage: /<command>
+  lockpicking:
+    description: lockpicking command
+    usage: /<command>
+  pickpocketing:
+    description: pickpocketing command
+    usage: /<command>
+  repair:
+    description: repair command
+    usage: /<command>
+  smithing:
+    descrription: smithing command
+    usage: /<command>
+  cooking:
+    description: cooking command
+    usage: /<command>
+  building:
+    description: building comnd
+    usage: /<command>

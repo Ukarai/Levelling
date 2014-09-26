@@ -1,0 +1,76 @@
+Changelog:
+
+----------
++ Addition
+- Deletion
+~ Alteration
+! Bug fix
+----------
+
++ Repair xp scales to what you're repairing
++ Classes grant 15% extra xp to their stats
+! Fixed lockpicking not working after a fail
+! Fixed classes not automatically levelling
++ Added nameplate colours corresponding to class (Uses TagAPI plugin)
+~ Nerfed mining xp drop chance
+ (30/12/12)
++ Added command for each skill
+~ Mining right click ability only gives extra xp from blocks which would level mining skill
+ (31/12/12)
++ Added leaderboards
++ Enchanting xp gaining
++ Added emerald ore to mining xp table
+ (1/1/13)
+~ Increase enchanting xp multiplyer
+~ Increased xp gained from pickpocketing
+~ Increased xp gained from enchanting
++ Blocking skill for swords
+! Fixed woodcutting command having wrong heading and giving wrong info
+! Fixed farming command having wrong heading
+ (2/1/13)
++ Started to implement text file to replace yml
++ Finished text file implementation]
+ (4/1/13)
+~ Renamed Repair to Smithing
++ Total level at bottom of /stats
++ /Stats top shows the leaderboard for total level
+ (5/1/13)
++ Repair of bows and fishing rods
++ Added obsidian to mining xp table
++ Added cooking skill
++ Blacksmith class
++ Added string (for bows and fishing rods) to repair xp table
+! Fixed repair info page showing incorrect information
++ Separated repair info page xp table into weapons and armour
+ (8/1/13)
+! Fixed right click ability cooldown system
+ (13/1/13)
++ Added farming right click ability - Full Harvest
++ Added different xp for each crop in farming skill
+ (14/1/13)
++ Added alias of /trade for the class command
++ Definite drops from crops broken my farming ability
+~ Reduced farming xp for cocoa from 96 to 32
++ Added /class untrain command
++ Added gold ingots, gold blocks, trash and stone brick (cracked) to archaeology loot table
++ Finished cooking command
+! Fixed archeology drops
+~ Reduced archaeology drop chances
+! Fixed carrots and potatoes not giving farming xp
+ (16/1/13)
+~ Nerfed all archaeology drop chances ... quite a lot
+ (24/1/13)
++ Added sandstone to mining xp table
++ Added cooking xp for killing mobs with fire aspect
+ (26/1/13)
++ Added building skill
++ Added Citizen class
+ (27/1/13)
+! Fixed typo preventing Mycelum giving building xp
+! Fixed building perk only applying to blocks which give building xp
+ (28/1/13)
++ Colour to /class list
+! Fixed building xp in worldguard areas
++ Farmer class
++ Building command
+
