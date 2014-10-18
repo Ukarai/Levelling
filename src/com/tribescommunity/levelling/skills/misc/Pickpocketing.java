@@ -3,6 +3,7 @@ package com.tribescommunity.levelling.skills.misc;
 import java.util.Random;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -47,6 +48,10 @@ public class Pickpocketing extends com.tribescommunity.levelling.skills.Skill {
         }
         if (plugin.levellingGods.contains(user)) {
             player.sendMessage(ChatColor.GOLD + "[Pickpocketing] " + ChatColor.RED + "You cannot pickpocket people while you have levelling god active");
+            return;
+        }
+        if(clicked.getGameMode() == GameMode.CREATIVE) {
+        	player.sendMessage(ChatColor.GOLD + "[Pickpocketing] " + ChatColor.RED + "You cannot pickpocket people who are in creative mode");
             return;
         }
 

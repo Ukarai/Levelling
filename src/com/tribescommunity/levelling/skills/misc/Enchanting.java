@@ -54,12 +54,7 @@ public class Enchanting extends Skill {
 		Player player = e.getEnchanter();
 		User user = plugin.getUser(player.getName());
 
-		for (Enchantment en : e.getEnchantsToAdd().keySet()) {
-			Bukkit.broadcastMessage(en.getName());
-		}
-
-		user.addXp(com.tribescommunity.levelling.data.Skill.ENCHANTING, e.getExpLevelCost() * 9);
-		player.sendMessage(ChatColor.GOLD + "[Enchanting] " + ChatColor.WHITE + "Enchantment bonus!");
+		user.addXp(com.tribescommunity.levelling.data.Skill.ENCHANTING, e.getExpLevelCost() * 10);
 	}
 
 	@Override
