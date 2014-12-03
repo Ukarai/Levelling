@@ -2,7 +2,9 @@ package com.tribescommunity.levelling.commands;
 
 import net.milkbowl.vault.economy.EconomyResponse;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -34,8 +36,9 @@ public class ClassCommandExecutor implements CommandExecutor {
 			if (args.length == 0) {
 				if (!user.hasClass()) {
 					for (LevellingClass lClass : LevellingClass.values()) {
-						player.sendMessage(lClass.getColour() + lClass.getName() + ": " + ChatColor.WHITE + "15 " + ChatColor.GOLD + lClass.getPrimary().getName() + ChatColor.WHITE + ", 10 "
-								+ ChatColor.GOLD + lClass.getSecondary().getName() + ChatColor.WHITE + ", 5 " + ChatColor.GOLD + lClass.getTeritary().getName());
+						player.sendMessage(lClass.getColour() + lClass.getName() + ": " + ChatColor.WHITE + "15 " + ChatColor.GOLD + lClass.getPrimary().getName()
+								+ ChatColor.WHITE + ", 10 " + ChatColor.GOLD + lClass.getSecondary().getName() + ChatColor.WHITE + ", 5 " + ChatColor.GOLD
+								+ lClass.getTeritary().getName());
 					}
 				} else {
 					player.sendMessage(ChatColor.AQUA + "Requirements for next level");
@@ -46,13 +49,16 @@ public class ClassCommandExecutor implements CommandExecutor {
 			} else if (args.length == 1) {
 				if (args[0].equalsIgnoreCase("list")) {
 					for (LevellingClass lClass : LevellingClass.values()) {
-						player.sendMessage(lClass.getColour() + lClass.getName() + ": " + ChatColor.WHITE + "20 " + ChatColor.GOLD + lClass.getPrimary().getName() + ChatColor.WHITE + ", 15 "
-								+ ChatColor.GOLD + lClass.getSecondary().getName() + ChatColor.WHITE + ", 10 " + ChatColor.GOLD + lClass.getTeritary().getName());
+						player.sendMessage(lClass.getColour() + lClass.getName() + ": " + ChatColor.WHITE + "20 " + ChatColor.GOLD + lClass.getPrimary().getName()
+								+ ChatColor.WHITE + ", 15 " + ChatColor.GOLD + lClass.getSecondary().getName() + ChatColor.WHITE + ", 10 " + ChatColor.GOLD
+								+ lClass.getTeritary().getName());
 					}
 				} else if (args[0].equalsIgnoreCase("untrain")) {
 					if (user.hasClass()) {
 						if (plugin.getEconomy() != null) {
-							EconomyResponse er = plugin.getEconomy().withdrawPlayer(player.getName(), 50000);
+							OfflinePlayer op = Bukkit.getOfflinePlayer(player.getUniqueId());
+
+							EconomyResponse er = plugin.getEconomy().withdrawPlayer(op, 50000);
 
 							if (er.transactionSuccess()) {
 								user.untrainClass();

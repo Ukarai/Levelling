@@ -28,6 +28,7 @@ public class PlayerListener implements Listener {
 		backend = plugin.getBackend();
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void playerJoin(PlayerJoinEvent e) {
 		Player player = e.getPlayer();

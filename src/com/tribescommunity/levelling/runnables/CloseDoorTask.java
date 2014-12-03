@@ -28,6 +28,7 @@ public class CloseDoorTask implements Runnable {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	static void closeDoor(Block block) {
 		byte data = block.getData();
 		if ((data & 0x8) == 0x8) {
@@ -41,6 +42,7 @@ public class CloseDoorTask implements Runnable {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	static boolean isDoorClosed(Block block) {
 		byte data = block.getData();
 		if ((data & 0x8) == 0x8) {

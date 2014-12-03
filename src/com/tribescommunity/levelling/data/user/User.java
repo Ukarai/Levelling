@@ -2,12 +2,10 @@ package com.tribescommunity.levelling.data.user;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import com.tribescommunity.levelling.Levelling;
@@ -21,9 +19,6 @@ import com.tribescommunity.levelling.data.party.Party;
  * Maker: theguynextdoor
  */
 public class User {
-	
-	private UUID uuid;
-	private String lastKnownName;
 
 	public Levelling plugin;
 	private String name;
@@ -137,15 +132,15 @@ public class User {
 		return recentlyPickpocketed;
 	}
 
+	/*
+	 * Levelling class
+	 */
 	public void checkClassLevel() {
 		while (levellingClass.hasRequirments(this, levelStore.getClassLevel() + 1)) {
 			levelStore.classLevelUp();
 		}
 	}
 
-	/*
-	 * Levelling class
-	 */
 	public boolean hasClass() {
 		return levellingClass != null;
 	}
@@ -158,6 +153,7 @@ public class User {
 		return levellingClass;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void untrainClass() {
 		if (hasClass()) {
 			String currentPrefix = plugin.getChat().getGroupPrefix("world", plugin.getChat().getPlayerGroups("world", name)[0]);
@@ -169,6 +165,7 @@ public class User {
 		levellingClass = null;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void trainClass(LevellingClass lClass) {
 		String currentPrefix = plugin.getChat().getGroupPrefix("world", plugin.getChat().getPlayerGroups("world", name)[0]);
 		String addTag = lClass.getTag() + currentPrefix;

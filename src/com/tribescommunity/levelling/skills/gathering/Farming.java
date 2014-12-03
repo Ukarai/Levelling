@@ -28,6 +28,7 @@ public class Farming extends Skill {
 		return com.tribescommunity.levelling.data.Skill.FARMING.getName();
 	}
 
+	@SuppressWarnings("deprecation")
 	public boolean isFullGrownTop(Block block) {
 		Material type = block.getType();
 		if (getXp(type) > 0) {
@@ -45,26 +46,26 @@ public class Farming extends Skill {
 
 	public long getXp(Material type) {
 		switch (type) {
-			case WHEAT:
-			case VINE:
-			case COCOA:
-			case CROPS:
-				return 32;
-			case SUGAR_CANE:
-			case SUGAR_CANE_BLOCK:
-			case PUMPKIN:
-			case MELON_BLOCK:
-			case POTATO:
-			case CARROT:
-			case CARROT_ITEM:
-			case CACTUS:
-				return 64;
-			case RED_MUSHROOM:
-			case BROWN_MUSHROOM:
-			case NETHER_WARTS:
-				return 128;
-			default:
-				return 0;
+		case WHEAT:
+		case VINE:
+		case COCOA:
+		case CROPS:
+			return 32;
+		case SUGAR_CANE:
+		case SUGAR_CANE_BLOCK:
+		case PUMPKIN:
+		case MELON_BLOCK:
+		case POTATO:
+		case CARROT:
+		case CARROT_ITEM:
+		case CACTUS:
+			return 64;
+		case RED_MUSHROOM:
+		case BROWN_MUSHROOM:
+		case NETHER_WARTS:
+			return 128;
+		default:
+			return 0;
 		}
 	}
 
@@ -83,23 +84,17 @@ public class Farming extends Skill {
 
 		if (level > 0 && level <= 20) {
 			return 1;
-		}
-		else if (level > 20 && level <= 40) {
+		} else if (level > 20 && level <= 40) {
 			return 2;
-		}
-		else if (level > 40 && level <= 60) {
+		} else if (level > 40 && level <= 60) {
 			return 3;
-		}
-		else if (level > 60 && level <= 80) {
+		} else if (level > 60 && level <= 80) {
 			return 4;
-		}
-		else if (level > 80 && level <= 100) {
+		} else if (level > 80 && level <= 100) {
 			return 5;
-		}
-		else if (level > 100 && level <= 120) {
+		} else if (level > 100 && level <= 120) {
 			return 6;
-		}
-		else
+		} else
 			return 0;
 	}
 }

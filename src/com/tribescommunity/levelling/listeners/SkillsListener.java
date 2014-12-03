@@ -6,10 +6,8 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,7 +17,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -253,6 +250,7 @@ public class SkillsListener implements Listener {
 			if (player.isSneaking()) {
 				Player clicked = (Player) e.getRightClicked();
 				User user = plugin.getUser(player.getName());
+				
 				pickpocketing.handlePickpocketing(plugin, player, user, clicked);
 			}
 		}
@@ -271,9 +269,6 @@ public class SkillsListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void enchant(EnchantItemEvent e) {
-		Player player = e.getEnchanter();
-		User user = plugin.getUser(player.getName());
-
 		plugin.getSkillHandler().getEnchanting().enchantEvent(e);
 	}
 
@@ -283,7 +278,7 @@ public class SkillsListener implements Listener {
 			if (e.getEntity() instanceof Player) {
 				Player player = (Player) e.getEntity();
 				User user = plugin.getUser(player.getName());
-
+				
 				if (player.isBlocking()) {
 					e.setDamage(e.getDamage() - swords.damageToBlock(user, e.getDamage()));
 				}
@@ -295,6 +290,7 @@ public class SkillsListener implements Listener {
 	public void furnace(FurnaceExtractEvent e) {
 		Player player = e.getPlayer();
 		User user = plugin.getUser(player.getName());
+		
 		user.addXp(Skill.COOKING, cooking.getFurnaceCookedXp(e.getItemType()) * e.getItemAmount());
 		user.addXp(Skill.REPAIR, repair.getXp(e.getItemType()) * e.getItemAmount());
 	}
@@ -303,33 +299,8 @@ public class SkillsListener implements Listener {
 	public void cookingCraftingBench(CraftItemEvent e) {
 		if (e.getWhoClicked() instanceof Player) {
 			User user = plugin.getUser(e.getWhoClicked().getName());
+			
 			user.addXp(Skill.COOKING, cooking.getCraftingBencheCookedXp(e.getRecipe().getResult().getType()));
-		}
-	}
-
-	@EventHandler
-	public void cookingSword(EntityDeathEvent e) {
-		EntityType type = e.getEntityType();
-
-		if (type == EntityType.CHICKEN || type == EntityType.COW || type == EntityType.PIG) {
-			LivingEntity killed = e.getEntity();
-
-			if (killed.getKiller() instanceof Player) {
-				Player player = killed.getKiller();
-
-				if (player.getItemInHand() != null) {
-					ItemStack is = player.getItemInHand();
-					Material t = is.getType();
-
-					if (t == Material.WOOD_SWORD || t == Material.STONE_SWORD || t == Material.GOLD_SWORD || t == Material.IRON_SWORD || t == Material.DIAMOND_SWORD) {
-						if (is.containsEnchantment(Enchantment.FIRE_ASPECT)) {
-							User user = plugin.getUser(player.getName());
-
-							user.addXp(Skill.COOKING, cooking.getFireKillDrops(type));
-						}
-					}
-				}
-			}
 		}
 	}
 
