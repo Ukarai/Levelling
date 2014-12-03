@@ -350,8 +350,13 @@ public class SkillsListener implements Listener {
 
 	@EventHandler
 	public void panning(PlayerInteractEvent e) {
-		if (e.getPlayer().getGameMode() != GameMode.CREATIVE)
-			skillHandler.getGoldPanning().pan(plugin.getUser(e.getPlayer().getName()), e);
+		if (e.getPlayer().getGameMode() != GameMode.CREATIVE) {
+			Player player = e.getPlayer();
+			User user = plugin.getUser(player.getName());
+
+			if (user.getLevellingClass() == LevellingClass.GATHERER)
+				skillHandler.getGoldPanning().pan(plugin.getUser(e.getPlayer().getName()), e);
+		}
 	}
 
 	@EventHandler(ignoreCancelled = true)

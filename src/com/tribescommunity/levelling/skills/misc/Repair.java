@@ -12,6 +12,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.tribescommunity.levelling.abilities.RightClickAbility;
+import com.tribescommunity.levelling.data.LevellingClass;
 import com.tribescommunity.levelling.data.repair.ArmourMaterial;
 import com.tribescommunity.levelling.data.repair.ToolMaterial;
 import com.tribescommunity.levelling.data.user.User;
@@ -155,6 +156,20 @@ public class Repair extends Skill {
 						user.addXp(com.tribescommunity.levelling.data.Skill.REPAIR, getXp(is));
 
 						player.getInventory().removeItem(itemStack);
+
+						if (is.getEnchantments().size() > 0) {
+							if (user.getLevellingClass() != LevellingClass.BLACKSMITH) {
+								if (Math.random() > 0.5) {
+									is.getItemMeta().getEnchants().clear();
+									if (ToolMaterial.getToolMaterial(is) != null) {
+										player.sendMessage("The magic fades from your weapon");
+									} else {
+										player.sendMessage("The magic fades from your armour");
+									}
+								}
+							}
+						}
+
 						player.sendMessage(ChatColor.GOLD + "[Repair] " + ChatColor.WHITE + "Your " + ChatColor.AQUA
 								+ StringUtils.capitalize(is.getType().toString().toLowerCase().replaceAll("_", " ")) + ChatColor.WHITE + " has been repaired");
 					}

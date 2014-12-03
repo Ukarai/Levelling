@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -161,8 +162,9 @@ public class User {
 		if (hasClass()) {
 			String currentPrefix = plugin.getChat().getGroupPrefix("world", plugin.getChat().getPlayerGroups("world", name)[0]);
 			String removeTag = currentPrefix.replace(getLevellingClass().getTag(), "");
+			OfflinePlayer op = Bukkit.getOfflinePlayer(name);
 
-			plugin.getChat().setPlayerPrefix("world", name, removeTag);
+			plugin.getChat().setPlayerPrefix("world", op, removeTag);
 		}
 		levellingClass = null;
 	}
@@ -170,8 +172,9 @@ public class User {
 	public void trainClass(LevellingClass lClass) {
 		String currentPrefix = plugin.getChat().getGroupPrefix("world", plugin.getChat().getPlayerGroups("world", name)[0]);
 		String addTag = lClass.getTag() + currentPrefix;
+		OfflinePlayer op = Bukkit.getOfflinePlayer(name);
 
-		plugin.getChat().setPlayerPrefix("world", name, addTag);
+		plugin.getChat().setPlayerPrefix("world", op, addTag);
 		levellingClass = lClass;
 
 		for (int i = 0; i <= 8; i++) {

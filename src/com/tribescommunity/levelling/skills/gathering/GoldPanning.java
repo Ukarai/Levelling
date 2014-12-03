@@ -51,7 +51,6 @@ public class GoldPanning extends Skill {
 					}
 				}
 			}
-
 		}
 
 		user.addXp(com.tribescommunity.levelling.data.Skill.GOLDPANNING, xpToGive);

@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import com.tribescommunity.levelling.Levelling;
 import com.tribescommunity.levelling.data.Backend;
+import com.tribescommunity.levelling.data.LevellingClass;
 import com.tribescommunity.levelling.data.Skill;
 import com.tribescommunity.levelling.data.user.User;
 
@@ -129,20 +130,23 @@ public class StatsCommandExecutor implements CommandExecutor {
 	}
 
 	public String getStatString(User user, Skill skill) {
-		String msg = ChatColor.GOLD + skill.getName() + ": " + ChatColor.WHITE + user.getLevel(skill) + ChatColor.GOLD + " - " + ChatColor.WHITE + user.getXp(skill) + ChatColor.GOLD + "/"
-				+ ChatColor.WHITE + user.getXpToNextLevel(skill);
+		String msg = ChatColor.GOLD + skill.getName() + ": " + ChatColor.WHITE + user.getLevel(skill) + ChatColor.GOLD + " - " + ChatColor.WHITE + user.getXp(skill)
+				+ ChatColor.GOLD + "/" + ChatColor.WHITE + user.getXpToNextLevel(skill);
 		return msg;
 	}
 
 	public void sendStatsMessage(CommandSender sender, User user) {
 		List<String> lines = new ArrayList<String>();
 
-		if (user.hasClass()) {
-
-		}
 		lines.add(ChatColor.translateAlternateColorCodes('&', " &m           -&6" + user.getName() + "&f&m            -"));
 		for (Skill skill : Skill.values()) {
-			lines.add(getStatString(user, skill));
+			if (skill == Skill.GOLDPANNING) {
+				if (user.getLevellingClass() == LevellingClass.GATHERER) {
+					lines.add(getStatString(user, skill));
+				}
+			} else {
+				lines.add(getStatString(user, skill));
+			}
 		}
 		lines.add(ChatColor.translateAlternateColorCodes('&', "&m                                 -"));
 		lines.add(ChatColor.GOLD + "" + ChatColor.BOLD + "TOTAL LEVEL: " + ChatColor.WHITE + user.getTotalLevel());
