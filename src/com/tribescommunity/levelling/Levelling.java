@@ -45,6 +45,7 @@ import com.tribescommunity.levelling.data.party.Party;
 import com.tribescommunity.levelling.data.user.User;
 import com.tribescommunity.levelling.listeners.AbilityListener;
 import com.tribescommunity.levelling.listeners.BlockListener;
+import com.tribescommunity.levelling.listeners.PerkListener;
 import com.tribescommunity.levelling.listeners.PlayerListener;
 import com.tribescommunity.levelling.listeners.SelfListener;
 import com.tribescommunity.levelling.listeners.SkillsListener;
@@ -182,6 +183,7 @@ public class Levelling extends JavaPlugin {
 		pm.registerEvents(new SkillsListener(this), this);
 		pm.registerEvents(new SelfListener(this), this);
 		pm.registerEvents(new AbilityListener(this), this);
+		pm.registerEvents(new PerkListener(this), this);
 	}
 
 	public void registerCommands() {
