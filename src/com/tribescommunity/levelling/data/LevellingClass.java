@@ -7,27 +7,35 @@ import org.bukkit.ChatColor;
 import com.tribescommunity.levelling.data.user.User;
 
 public enum LevellingClass {
+	ARCHER(ChatColor.GREEN, "Archer", "Marksman", "Deadeye", ARCHERY, WOODCUTTING, ARCHAEOLOGY),
+	THIEF(ChatColor.DARK_BLUE, "Thief", "Bandit", "Rogue", UNARMED, LOCKPICKING, PICKPOCKETING),
+	CRUSADER(ChatColor.YELLOW, "Crusader", "Paladin", "Champion", SWORDS, MINING, REPAIR),
+	GATHERER(ChatColor.BLUE, "Gatherer", "Hoarder", "Connoisseur", MINING, ARCHAEOLOGY, WOODCUTTING),
+	BLACKSMITH(ChatColor.DARK_GRAY, "Blacksmith", "Journeyman", " Mastersmith", REPAIR, SWORDS, MINING),
+	CITIZEN(ChatColor.RED, "Citizen", "Settler", "Pioneer", BUILDING, COOKING, UNARMED),
+	FARMER(ChatColor.GOLD, "Farmer", "Harvester", "Agronomist", FARMING, GOLDPANNING, BUILDING);
 
-	ARCHER(ChatColor.GREEN, "Archer", ARCHERY, WOODCUTTING, ARCHAEOLOGY),
-	THIEF(ChatColor.DARK_BLUE, "Thief", UNARMED, LOCKPICKING, PICKPOCKETING),
-	CRUSADER(ChatColor.YELLOW, "Crusader", SWORDS, MINING, REPAIR),
-	GATHERER(ChatColor.BLUE, "Gatherer", MINING, ARCHAEOLOGY, WOODCUTTING),
-	BLACKSMITH(ChatColor.DARK_GRAY, "Blacksmith", REPAIR, SWORDS, MINING),
-	CITIZEN(ChatColor.RED, "Citizen", BUILDING, COOKING, UNARMED),
-	FARMER(ChatColor.GOLD, "Farmer", FARMING, GOLDPANNING, BUILDING);
+	public static final int MAX_LEVEL = 9;
+	public static final double PRIMARY_MODIFIER = 1.2;
+	public static final double SECONDARY_MODIFIER = 1.15;
+	public static final double TERTIARY_MODIFIER = 1.1;
 
 	private Skill primary;
 	private Skill secondary;
 	private Skill teritary;
 	private ChatColor colour;
 	private String name;
+	private String nameTwo;
+	private String nameThree;
 
-	private LevellingClass(ChatColor colour, String name, Skill primary, Skill secondary, Skill tertiary) {
+	private LevellingClass(ChatColor colour, String name, String nameTwo, String nameThree, Skill primary, Skill secondary, Skill tertiary) {
 		this.colour = colour;
 		this.primary = primary;
 		this.secondary = secondary;
 		this.teritary = tertiary;
 		this.name = name;
+		this.nameTwo = nameTwo;
+		this.nameThree = nameThree;
 	}
 
 	public Skill getPrimary() {
@@ -48,8 +56,10 @@ public enum LevellingClass {
 
 	public static LevellingClass getFromName(String name) {
 		for (LevellingClass lc : values()) {
-			if (lc.getName().equalsIgnoreCase(name)) {
-				return lc;
+			for (int i = 0; i < MAX_LEVEL; i += 3) {
+				if (lc.getName(i).equalsIgnoreCase(name)) {
+					return lc;
+				}
 			}
 		}
 		return null;
@@ -63,11 +73,23 @@ public enum LevellingClass {
 		return prime && sec && tir;
 	}
 
-	public String getName() {
-		return name;
+	public String getName(int i) {
+		if (i >= 0 && i < 3) {
+			return name;
+		} else if (i >= 3 && i < 6) {
+			return nameTwo;
+		} else if (i >= 6) {
+			return nameThree;
+		} else {
+			return name;
+		}
 	}
-	
-	public String getTag() {
-		return getColour() + "[" + getName() + "]" + ChatColor.WHITE;
+
+	public String getNameTwo() {
+		return nameTwo;
+	}
+
+	public String getNameThree() {
+		return nameThree;
 	}
 }

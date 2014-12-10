@@ -37,11 +37,61 @@ public class StatsCommandExecutor implements CommandExecutor {
 		if (args.length == 0) {
 			handleStatsCommand(sender);
 		} else if (args.length == 1) {
-			handleOtherStatsCommand(sender, args);
+			if (args[0].equalsIgnoreCase("enchant"))
+				handleEnchantCommand(sender, args);
+			else
+				handleOtherStatsCommand(sender, args);
 		} else if (args.length == 2) {
-			handleStatsTopCommand(sender, args);
+			if (args[0].equalsIgnoreCase("xp"))
+				handleXpCommand(sender, args);
+			else
+				handleStatsTopCommand(sender, args);
 		}
 		return true;
+	}
+
+	private void handleEnchantCommand(CommandSender sender, String[] args) {
+		if (sender instanceof Player) {
+			Player player = (Player) sender;
+			User user = plugin.getUser(player.getName());
+
+			user.getEnchantMenu().open(user, player);
+		}
+	}
+
+	private void handleXpCommand(CommandSender sender, String[] args) {
+		if (sender instanceof Player) {
+			Player player = (Player) sender;
+			User user = plugin.getUser(player.getName());
+
+			for (Skill skill : Skill.values()) {
+				if (skill.getName().equalsIgnoreCase(args[1])) {
+					int totalXp = player.getTotalExperience();
+					int addXp = totalXp / 2;
+
+					if (user.hasClass()) {
+						LevellingClass lClass = user.getLevellingClass();
+
+						if (lClass.getPrimary() == skill) {
+							addXp *= LevellingClass.PRIMARY_MODIFIER;
+						} else if (lClass.getSecondary() == skill) {
+							addXp *= LevellingClass.SECONDARY_MODIFIER;
+						} else if (lClass.getTeritary() == skill) {
+							addXp *= LevellingClass.TERTIARY_MODIFIER;
+						}
+					}
+
+					user.addXp(skill, addXp);
+					player.setTotalExperience(0);
+					player.setExp(0);
+					player.setLevel(0);
+					player.sendMessage(totalXp + "" + ChatColor.GOLD + " xp has been converted into " + ChatColor.WHITE + addXp + " " + ChatColor.GOLD + skill.getName() + " xp");
+					return;
+				}
+			}
+
+			player.sendMessage(ChatColor.GOLD + "[Levelling] " + ChatColor.RED + "There is no skill with the name '" + args[1] + "'");
+		}
 	}
 
 	private void handleStatsTopCommand(CommandSender sender, String[] args) {

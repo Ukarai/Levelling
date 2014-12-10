@@ -49,14 +49,8 @@ public class Party {
 			}
 		}
 	}
-
-	public void sendMessage(Player sender, String message) {
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			if (people.contains(player.getName())) {
-				player.sendMessage(ChatColor.GREEN + "{" + sender.getName() + "} " + message);
-			}
-		}
-
-		plugin.getLogger().info("[" + getName() + "] " + sender.getName() + ": " + message);
+	
+	public boolean inParty(String name) {
+		return people.contains(name);
 	}
 }

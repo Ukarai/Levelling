@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.tribescommunity.levelling.Levelling;
+import com.tribescommunity.levelling.data.LevellingClass;
 import com.tribescommunity.levelling.data.Skill;
 import com.tribescommunity.levelling.events.ClassLevelUpEvent;
 import com.tribescommunity.levelling.events.SkillLevelUpEvent;
@@ -18,12 +19,11 @@ import com.tribescommunity.levelling.events.SkillLevelUpEvent;
  * Maker: theguynextdoor
  */
 public class LevelStore {
-
 	private String name;
 	private User user;
 	protected Map<Skill, Integer> level;
 	protected Map<Skill, Long> xp;
-	private int classLevel;
+	private int classLevel = 0;
 	protected static long[] xpPerLevel = new long[361];
 
 	static {
@@ -67,6 +67,8 @@ public class LevelStore {
 		if (Bukkit.getPlayerExact(name) != null) {
 			Bukkit.getPlayerExact(name).sendMessage(getLevelUpMsg(skill));
 		}
+
+		checkLevelUp(skill);
 	}
 
 	public String getLevelUpMsg(Skill skill) {
@@ -103,8 +105,8 @@ public class LevelStore {
 	public void setClassLevel(int classLevel) {
 		this.classLevel = classLevel;
 
-		if (this.classLevel > 8) {
-			this.classLevel = 8;
+		if (this.classLevel > LevellingClass.MAX_LEVEL) {
+			this.classLevel = LevellingClass.MAX_LEVEL;
 		}
 	}
 
@@ -121,6 +123,7 @@ public class LevelStore {
 	}
 
 	public String getClassLevelUpMsg(Player player) {
-		return ChatColor.GOLD + "[" + user.levellingClass.getName() + "] " + ChatColor.WHITE + "Level up!" + ChatColor.GOLD + " (" + ChatColor.WHITE + getClassLevel() + ChatColor.GOLD + ")";
+		return ChatColor.GOLD + "[" + user.levellingClass.getName(classLevel) + "] " + ChatColor.WHITE + "Level up!" + ChatColor.GOLD + " (" + ChatColor.WHITE + classLevel
+				+ ChatColor.GOLD + ")";
 	}
 }

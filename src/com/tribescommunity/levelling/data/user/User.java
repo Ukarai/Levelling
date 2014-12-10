@@ -5,13 +5,14 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.tribescommunity.levelling.Levelling;
 import com.tribescommunity.levelling.data.LevellingClass;
 import com.tribescommunity.levelling.data.Skill;
+import com.tribescommunity.levelling.data.chat.ChatChannel;
 import com.tribescommunity.levelling.data.party.Party;
+import com.tribescommunity.levelling.skills.misc.enchanting.EnchantMenu;
 
 /* 
  * Date: 15 Nov 2012
@@ -27,6 +28,8 @@ public class User {
 	private Party party;
 	private Set<String> recentlyPickpocketed = new HashSet<String>();
 	public boolean recentLockpickFail = false;
+	private EnchantMenu enchantMenu;
+	private ChatChannel chatChannel;
 
 	public User(Levelling instance, String name) {
 		plugin = instance;
@@ -39,6 +42,8 @@ public class User {
 		}
 
 		plugin.getUsers().put(name, this);
+		enchantMenu = new EnchantMenu(instance);
+		chatChannel = ChatChannel.DEFAULT;
 	}
 
 	public User(String fromFile, Levelling plugin) {
@@ -63,6 +68,9 @@ public class User {
 				joinParty(party);
 			}
 		}
+
+		enchantMenu = new EnchantMenu(plugin);
+		chatChannel = ChatChannel.DEFAULT;
 	}
 
 	public String getName() {
@@ -106,8 +114,14 @@ public class User {
 			Skill secondary = levellingClass.getSecondary();
 			Skill tertiary = levellingClass.getTeritary();
 
-			if (primary == skill || secondary == skill || tertiary == skill) {
-				xp *= 1.15;
+			if (primary == skill) {
+				xp *= LevellingClass.PRIMARY_MODIFIER;
+				xp = (long) Math.floor(xp);
+			} else if (secondary == skill) {
+				xp *= LevellingClass.SECONDARY_MODIFIER;
+				xp = (long) Math.floor(xp);
+			} else if (tertiary == skill) {
+				xp *= LevellingClass.TERTIARY_MODIFIER;
 				xp = (long) Math.floor(xp);
 			}
 		}
@@ -153,28 +167,14 @@ public class User {
 		return levellingClass;
 	}
 
-	@SuppressWarnings("deprecation")
 	public void untrainClass() {
-		if (hasClass()) {
-			String currentPrefix = plugin.getChat().getGroupPrefix("world", plugin.getChat().getPlayerGroups("world", name)[0]);
-			String removeTag = currentPrefix.replace(getLevellingClass().getTag(), "");
-			OfflinePlayer op = Bukkit.getOfflinePlayer(name);
-
-			plugin.getChat().setPlayerPrefix("world", op, removeTag);
-		}
 		levellingClass = null;
 	}
 
-	@SuppressWarnings("deprecation")
 	public void trainClass(LevellingClass lClass) {
-		String currentPrefix = plugin.getChat().getGroupPrefix("world", plugin.getChat().getPlayerGroups("world", name)[0]);
-		String addTag = lClass.getTag() + currentPrefix;
-		OfflinePlayer op = Bukkit.getOfflinePlayer(name);
-
-		plugin.getChat().setPlayerPrefix("world", op, addTag);
 		levellingClass = lClass;
 
-		for (int i = 0; i <= 8; i++) {
+		for (int i = 0; i <= LevellingClass.MAX_LEVEL; i++) {
 			if (lClass.hasRequirments(this, i)) {
 				levelStore.setClassLevel(i);
 			}
@@ -207,11 +207,12 @@ public class User {
 	 */
 	public String getSaveString() {
 		StringBuilder sb = new StringBuilder();
+
 		sb.append(name);
 		sb.append(':');
 		sb.append(party != null ? party.getName() : "");
 		sb.append(':');
-		sb.append(levellingClass != null ? levellingClass.getName() : "");
+		sb.append(levellingClass != null ? levellingClass.getName(levelStore.getClassLevel()) : "");
 		sb.append(':');
 		sb.append(levellingClass != null ? levelStore.getClassLevel() : 0);
 		sb.append(':');
@@ -227,5 +228,20 @@ public class User {
 		}
 
 		return sb.toString();
+	}
+
+	public EnchantMenu getEnchantMenu() {
+		return enchantMenu;
+	}
+
+	public ChatChannel getChatChannel() {
+		return chatChannel;
+	}
+
+	public void setChatChannel(ChatChannel channel) {
+		if (channel == null)
+			channel = ChatChannel.DEFAULT;
+
+		this.chatChannel = channel;
 	}
 }

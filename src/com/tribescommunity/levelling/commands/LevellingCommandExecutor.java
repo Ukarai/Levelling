@@ -2,9 +2,7 @@ package com.tribescommunity.levelling.commands;
 
 import java.io.IOException;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,7 +23,6 @@ public class LevellingCommandExecutor implements CommandExecutor {
 		plugin = instance;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender.hasPermission("levelling.command")) {
@@ -64,14 +61,6 @@ public class LevellingCommandExecutor implements CommandExecutor {
 					plugin.doBlockAbility = !plugin.doBlockAbility;
 					sender.sendMessage("doBlockAbility = " + plugin.doBlockAbility);
 				}
-			} else if (args[0].equalsIgnoreCase("refresh")) {
-				User user = plugin.getUser(args[1]);
-				OfflinePlayer op = Bukkit.getOfflinePlayer(user.getName());
-				String currentPrefix = plugin.getChat().getGroupPrefix("world", plugin.getChat().getPlayerGroups("world", op)[0]);
-				String addTag = user.getLevellingClass().getTag() + currentPrefix;
-
-				plugin.getChat().setPlayerPrefix("world", op, addTag);
-				sender.sendMessage(args[1] + " prefix refreshed");
 			}
 		}
 		return true;

@@ -36,11 +36,12 @@ public class ClassCommandExecutor implements CommandExecutor {
 			if (args.length == 0) {
 				if (!user.hasClass()) {
 					for (LevellingClass lClass : LevellingClass.values()) {
-						player.sendMessage(lClass.getColour() + lClass.getName() + ": " + ChatColor.WHITE + "15 " + ChatColor.GOLD + lClass.getPrimary().getName()
+						player.sendMessage(lClass.getColour() + lClass.getName(0) + ": " + ChatColor.WHITE + "15 " + ChatColor.GOLD + lClass.getPrimary().getName()
 								+ ChatColor.WHITE + ", 10 " + ChatColor.GOLD + lClass.getSecondary().getName() + ChatColor.WHITE + ", 5 " + ChatColor.GOLD
 								+ lClass.getTeritary().getName());
 					}
 				} else {
+					player.sendMessage(ChatColor.AQUA + "Current level: " + user.getClassLevel());
 					player.sendMessage(ChatColor.AQUA + "Requirements for next level");
 					player.sendMessage(15 * (user.getClassLevel() + 1) + " " + user.getLevellingClass().getPrimary().getName());
 					player.sendMessage(10 * (user.getClassLevel() + 1) + " " + user.getLevellingClass().getSecondary().getName());
@@ -49,7 +50,7 @@ public class ClassCommandExecutor implements CommandExecutor {
 			} else if (args.length == 1) {
 				if (args[0].equalsIgnoreCase("list")) {
 					for (LevellingClass lClass : LevellingClass.values()) {
-						player.sendMessage(lClass.getColour() + lClass.getName() + ": " + ChatColor.WHITE + "20 " + ChatColor.GOLD + lClass.getPrimary().getName()
+						player.sendMessage(lClass.getColour() + lClass.getName(0) + ": " + ChatColor.WHITE + "20 " + ChatColor.GOLD + lClass.getPrimary().getName()
 								+ ChatColor.WHITE + ", 15 " + ChatColor.GOLD + lClass.getSecondary().getName() + ChatColor.WHITE + ", 10 " + ChatColor.GOLD
 								+ lClass.getTeritary().getName());
 					}
@@ -57,14 +58,18 @@ public class ClassCommandExecutor implements CommandExecutor {
 					if (user.hasClass()) {
 						if (plugin.getEconomy() != null) {
 							OfflinePlayer op = Bukkit.getOfflinePlayer(player.getUniqueId());
-
-							EconomyResponse er = plugin.getEconomy().withdrawPlayer(op, 50000);
+							EconomyResponse er = plugin.getEconomy().withdrawPlayer(op, plugin.getConfigInstance().getUntrainCost());
 
 							if (er.transactionSuccess()) {
 								user.untrainClass();
 								player.sendMessage(ChatColor.GOLD + "[Levelling] " + ChatColor.WHITE + "Your class has now been removed");
 							} else {
-								player.sendMessage(ChatColor.GOLD + "[Levelling] " + ChatColor.RED + er.errorMessage);
+								if (player.hasPermission("levelling.untrain")) {
+									user.untrainClass();
+									player.sendMessage(ChatColor.GOLD + "[Levelling] " + ChatColor.WHITE + "Your class has now been removed");
+								} else {
+									player.sendMessage(ChatColor.GOLD + "[Levelling] " + ChatColor.RED + er.errorMessage);
+								}
 							}
 						} else {
 							if (player.hasPermission("levelling.untrain")) {
@@ -77,15 +82,23 @@ public class ClassCommandExecutor implements CommandExecutor {
 					} else {
 						player.sendMessage(ChatColor.GOLD + "[Levelling] " + ChatColor.RED + "You never had a class you dolt");
 					}
+				} else if (args[0].equalsIgnoreCase("perks")) {
+					sender.sendMessage("Archer - " + "5 second speed boost (x2.5) after right clicking with an arrow. (Current 1 min cooldown)");
+					sender.sendMessage("Thief - " + "If you are within 45 degrees behind the player and sneaking, then you will deal an extra 1 damage");
+					sender.sendMessage("Crusader - " + "Gain a strength potion effect for 5 seconds after killing another player");
+					sender.sendMessage("Gatherer - " + "Gold panning skill");
+					sender.sendMessage("Blacksmith - " + "No chance to lose enchant on repairing an item");
+					sender.sendMessage("Citizen - " + "NOT IMPLEMENTED");
+					sender.sendMessage("Farmer - " + "heal potion effect applied for 5 seconds after eating food");
 				}
 			} else if (args.length == 2) {
 				if (args[0].equalsIgnoreCase("train")) {
 					for (LevellingClass lClass : LevellingClass.values()) {
-						if (lClass.getName().equalsIgnoreCase(args[1])) {
+						if (lClass.getName(0).equalsIgnoreCase(args[1])) {
 							if (!user.hasClass()) {
 								if (lClass.hasRequirments(user, 0)) {
 									user.trainClass(lClass);
-									player.sendMessage(ChatColor.GOLD + "[Levelling] " + ChatColor.AQUA + "You are now a " + ChatColor.WHITE + lClass.getName());
+									player.sendMessage(ChatColor.GOLD + "[Levelling] " + ChatColor.AQUA + "You are now a " + ChatColor.WHITE + lClass.getName(0));
 									return true;
 								} else {
 									player.sendMessage(ChatColor.GOLD + "[Levelling] " + ChatColor.RED + "You do not meet the requirements for this class");
@@ -116,7 +129,8 @@ public class ClassCommandExecutor implements CommandExecutor {
 						User user1 = plugin.getUser(args[1]);
 
 						if (user1.hasClass()) {
-							player.sendMessage(ChatColor.GOLD + "[Levelling] " + ChatColor.WHITE + user1.getName() + " has the class " + user1.getLevellingClass().getName());
+							player.sendMessage(ChatColor.GOLD + "[Levelling] " + ChatColor.WHITE + user1.getName() + " has the class "
+									+ user1.getLevellingClass().getName(user1.getClassLevel()));
 						} else {
 							player.sendMessage(ChatColor.GOLD + "[Levelling] " + ChatColor.RED + user1.getName() + " does not have a class");
 						}

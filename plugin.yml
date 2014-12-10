@@ -15,12 +15,17 @@ commands:
     description: class command
     usage: /<command>
     aliases: [trade]
+  leveladmin:
+    description: leveladmin command
+    usage: /<command>
+    aliases: [la]
   party:
     description: party command
     usage: /<command>
-  p:
+  partychat:
     description: party chat command
     usage: /<command>
+    aliases: [p, pc]
   ptp:
     description: part tp command
     usage: /<command> <player>
@@ -66,3 +71,15 @@ commands:
   building:
     description: building comnd
     usage: /<command>
+  adminchat:
+    description: admin chat command
+    usage: /<command> <message>
+    aliases: [a, ac]
+  modchat:
+    description: mod chat command
+    usage: /<command> <message>
+    aliases: [m, mc]
+  vipchat:
+    description: vip chat command
+    usage: /<command> <message>
+    aliases: [v, vc]

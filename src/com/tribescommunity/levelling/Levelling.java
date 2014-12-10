@@ -10,6 +10,7 @@ import java.util.TreeMap;
 
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -22,11 +23,12 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.tribescommunity.levelling.commands.ClassCommandExecutor;
+import com.tribescommunity.levelling.commands.LevelAdminCommandExecutor;
 import com.tribescommunity.levelling.commands.LevellingCommandExecutor;
-import com.tribescommunity.levelling.commands.PartyChatCommandExecutor;
 import com.tribescommunity.levelling.commands.PartyCommandExecutor;
 import com.tribescommunity.levelling.commands.PartyTeleportCommandExecutor;
 import com.tribescommunity.levelling.commands.StatsCommandExecutor;
+import com.tribescommunity.levelling.commands.chat.ChatChannelCommandExecutor;
 import com.tribescommunity.levelling.commands.skills.combat.ArcheryCommandExecutor;
 import com.tribescommunity.levelling.commands.skills.combat.SwordsCommandExecutor;
 import com.tribescommunity.levelling.commands.skills.combat.UnarmedCommandExecutor;
@@ -41,16 +43,19 @@ import com.tribescommunity.levelling.commands.skills.misc.LockpickingCommandExec
 import com.tribescommunity.levelling.commands.skills.misc.PickpocketingCommandExecutor;
 import com.tribescommunity.levelling.commands.skills.misc.RepairCommandExecutor;
 import com.tribescommunity.levelling.data.Backend;
+import com.tribescommunity.levelling.data.chat.ChatChannel;
 import com.tribescommunity.levelling.data.party.Party;
 import com.tribescommunity.levelling.data.user.User;
 import com.tribescommunity.levelling.listeners.AbilityListener;
 import com.tribescommunity.levelling.listeners.BlockListener;
+import com.tribescommunity.levelling.listeners.EnchantEffectListener;
 import com.tribescommunity.levelling.listeners.PerkListener;
 import com.tribescommunity.levelling.listeners.PlayerListener;
 import com.tribescommunity.levelling.listeners.SelfListener;
 import com.tribescommunity.levelling.listeners.SkillsListener;
 import com.tribescommunity.levelling.runnables.SaveTask;
 import com.tribescommunity.levelling.skills.SkillHandler;
+import com.tribescommunity.levelling.util.Config;
 import com.tribescommunity.levelling.util.CustomItemManager;
 import com.tribescommunity.levelling.util.Leaderboards;
 
@@ -62,8 +67,8 @@ import com.tribescommunity.levelling.util.Leaderboards;
 public class Levelling extends JavaPlugin {
 
 	public static final String USER_PLACED_META_STRING = "levelling-user-placed";
-	public static final int MAX_SKILL_LEVEL = 120;
-	
+	public static final int MAX_SKILL_LEVEL = 130;
+
 	private TreeMap<String, User> users;
 	public Map<String, Boolean> placedBlocks;
 	private Backend backend;
@@ -71,13 +76,12 @@ public class Levelling extends JavaPlugin {
 	private StatsCommandExecutor statsCommandExecutor;
 	private LevellingCommandExecutor levellingCommandExecutor;
 	private ClassCommandExecutor classCommandExecutor;
+	private LevelAdminCommandExecutor levelAdminCommandExecutor;
 	// Party
 	public Map<String, Party> parties;
-	public Set<String> partyChat;
 	public Map<String, Party> partyInvites;
 	// Party commands
 	private PartyCommandExecutor partyCommandExecutor;
-	private PartyChatCommandExecutor partyChatCommandExecutor;
 	private PartyTeleportCommandExecutor partyTeleportCommandExecutor;
 	// Skill commands
 	private MiningCommandExecutor miningCommandExecutor;
@@ -93,14 +97,19 @@ public class Levelling extends JavaPlugin {
 	private RepairCommandExecutor repairCommandExecutor;
 	private CookingCommandExecutor cookingCommandExecutor;
 	private BuildingCommandExecutor buildingCommandExecutor;
+
 	public Set<User> levellingGods;
 	private Leaderboards leaderboards;
 	private CustomItemManager cim;
 	private File userTextFile;
 	public boolean doBlockAbility = false;
+	private Config config;
 	// Vault
 	private Chat chat;
 	private Economy econ;
+	private Permission perm;
+
+	// Hacky instance... not ideal
 
 	@Override
 	public void onEnable() {
@@ -134,8 +143,8 @@ public class Levelling extends JavaPlugin {
 		backend = new Backend(this);
 		levellingGods = new HashSet<User>();
 		placedBlocks = backend.loadPlacedBlocks();
-		partyChat = new HashSet<String>();
 		partyInvites = new HashMap<String, Party>();
+		config = new Config(this);
 
 		leaderboards = new Leaderboards();
 		userTextFile = new File(getDataFolder(), "Users.txt");
@@ -155,8 +164,8 @@ public class Levelling extends JavaPlugin {
 		levellingCommandExecutor = new LevellingCommandExecutor(this);
 		classCommandExecutor = new ClassCommandExecutor(this);
 		partyCommandExecutor = new PartyCommandExecutor(this);
-		partyChatCommandExecutor = new PartyChatCommandExecutor(this);
 		partyTeleportCommandExecutor = new PartyTeleportCommandExecutor(this);
+		levelAdminCommandExecutor = new LevelAdminCommandExecutor(this);
 
 		miningCommandExecutor = new MiningCommandExecutor(this);
 		archaeologyCommandExecutor = new ArchaeologyCommandExecutor(this);
@@ -174,6 +183,7 @@ public class Levelling extends JavaPlugin {
 
 		setupChat();
 		setupEconomy();
+		setupPermissions();
 	}
 
 	public void registerListeners() {
@@ -184,6 +194,7 @@ public class Levelling extends JavaPlugin {
 		pm.registerEvents(new SelfListener(this), this);
 		pm.registerEvents(new AbilityListener(this), this);
 		pm.registerEvents(new PerkListener(this), this);
+		pm.registerEvents(new EnchantEffectListener(this), this);
 	}
 
 	public void registerCommands() {
@@ -191,8 +202,8 @@ public class Levelling extends JavaPlugin {
 		getCommand("levelling").setExecutor(levellingCommandExecutor);
 		getCommand("class").setExecutor(classCommandExecutor);
 		getCommand("party").setExecutor(partyCommandExecutor);
-		getCommand("p").setExecutor(partyChatCommandExecutor);
 		getCommand("ptp").setExecutor(partyTeleportCommandExecutor);
+		getCommand("leveladmin").setExecutor(levelAdminCommandExecutor);
 
 		getCommand("mining").setExecutor(miningCommandExecutor);
 		getCommand("archaeology").setExecutor(archaeologyCommandExecutor);
@@ -208,6 +219,12 @@ public class Levelling extends JavaPlugin {
 		getCommand("smithing").setExecutor(repairCommandExecutor);
 		getCommand("cooking").setExecutor(cookingCommandExecutor);
 		getCommand("building").setExecutor(buildingCommandExecutor);
+
+		for (ChatChannel channel : ChatChannel.values()) {
+			if (channel != ChatChannel.DEFAULT) {
+				getCommand(channel.getCommand()).setExecutor(new ChatChannelCommandExecutor(this, channel));
+			}
+		}
 	}
 
 	@Override
@@ -267,6 +284,12 @@ public class Levelling extends JavaPlugin {
 		return (econ != null);
 	}
 
+	private boolean setupPermissions() {
+		RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
+		perm = rsp.getProvider();
+		return perm != null;
+	}
+
 	public Chat getChat() {
 		return chat;
 	}
@@ -292,5 +315,13 @@ public class Levelling extends JavaPlugin {
 
 	public Economy getEconomy() {
 		return econ;
+	}
+
+	public Config getConfigInstance() {
+		return config;
+	}
+
+	public Permission getPerm() {
+		return perm;
 	}
 }
