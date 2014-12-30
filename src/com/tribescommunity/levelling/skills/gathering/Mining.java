@@ -1,5 +1,8 @@
 package com.tribescommunity.levelling.skills.gathering;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -10,13 +13,14 @@ import com.tribescommunity.levelling.abilities.RightClickAbility;
 import com.tribescommunity.levelling.abilities.gathering.MiningAbility;
 import com.tribescommunity.levelling.data.Skill;
 import com.tribescommunity.levelling.data.user.User;
+import com.tribescommunity.levelling.skills.LevellingSkill;
 
 /* 
  * Date: 16 Nov 2012
  * Time: 22:16:42
  * Maker: theguynextdoor
  */
-public class Mining extends com.tribescommunity.levelling.skills.Skill {
+public class Mining implements LevellingSkill {
 	private MiningAbility ability;
 
 	public Mining(Levelling plugin) {
@@ -25,7 +29,7 @@ public class Mining extends com.tribescommunity.levelling.skills.Skill {
 
 	@Override
 	public String getName() {
-		return com.tribescommunity.levelling.data.Skill.MINING.getName();
+		return Skill.MINING.getName();
 	}
 
 	public long getXp(Block block) {
@@ -80,13 +84,30 @@ public class Mining extends com.tribescommunity.levelling.skills.Skill {
 	public boolean isPick(ItemStack is) {
 		Material type = is.getType();
 
-		return type == Material.WOOD_PICKAXE || type == Material.STONE_PICKAXE || type == Material.GOLD_PICKAXE || type == Material.IRON_PICKAXE
-				|| type == Material.DIAMOND_PICKAXE;
+		return type == Material.WOOD_PICKAXE || type == Material.STONE_PICKAXE || type == Material.GOLD_PICKAXE || type == Material.IRON_PICKAXE || type == Material.DIAMOND_PICKAXE;
 	}
 
 	@Override
 	public RightClickAbility getAbility() {
 		return ability;
+	}
+
+	@Override
+	public List<String> getXpTable(int level) {
+		List<String> table = new ArrayList<>();
+
+		for (Material mat : Material.values()) {
+			if (getXp(mat) > 0) {
+				table.add(mat.getData().getName() + ": " + getXp(mat));
+			}
+		}
+
+		return table;
+	}
+
+	@Override
+	public String getXpMethodInfo() {
+		return "Xp is gained by mining blocks with a pickaxe";
 	}
 
 }

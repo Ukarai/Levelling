@@ -4,17 +4,17 @@ import org.bukkit.event.Event;
 
 import com.tribescommunity.levelling.Levelling;
 import com.tribescommunity.levelling.abilities.RightClickAbility;
-import com.tribescommunity.levelling.skills.Skill;
+import com.tribescommunity.levelling.skills.LevellingSkill;
 
 public class PickpocketingAbility extends RightClickAbility {
 
-	public PickpocketingAbility(String name, Skill skill, com.tribescommunity.levelling.data.Skill skillEnum, Levelling instance) {
+	public PickpocketingAbility(String name, LevellingSkill skill, com.tribescommunity.levelling.data.Skill skillEnum, Levelling instance) {
 		super(name, skill, skillEnum, instance);
 	}
 
 	@Override
 	public void doAbility(Event e) {
-		
+
 	}
 
 }

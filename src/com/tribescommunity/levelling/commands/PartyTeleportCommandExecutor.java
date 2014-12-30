@@ -17,7 +17,6 @@ public class PartyTeleportCommandExecutor implements CommandExecutor {
 		plugin = instance;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender instanceof Player) {

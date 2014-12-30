@@ -4,18 +4,21 @@
  */
 package com.tribescommunity.levelling.skills.misc;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Material;
 
 import com.tribescommunity.levelling.Levelling;
 import com.tribescommunity.levelling.abilities.RightClickAbility;
 import com.tribescommunity.levelling.data.user.User;
-import com.tribescommunity.levelling.skills.Skill;
+import com.tribescommunity.levelling.skills.LevellingSkill;
 
 /**
  *
  * @author David
  */
-public class Building extends Skill {
+public class Building implements LevellingSkill {
 
 	public long getXp(int id) {
 		switch (id) {
@@ -103,7 +106,7 @@ public class Building extends Skill {
 	}
 
 	public boolean shouldPreserveBlock(User user) {
-		double chance = 0.5 / Levelling.MAX_SKILL_LEVEL;
+		double chance = 0.25 / Levelling.MAX_SKILL_LEVEL;
 		return Math.random() <= (chance * user.getLevel(com.tribescommunity.levelling.data.Skill.BUILDING));
 	}
 
@@ -115,5 +118,23 @@ public class Building extends Skill {
 	@Override
 	public RightClickAbility getAbility() {
 		return null;
+	}
+
+	@Override
+	public List<String> getXpTable(int level) {
+		List<String> table = new ArrayList<>();
+
+		for (Material mat : Material.values()) {
+			if (getXp(mat) > 0) {
+				table.add(mat.getData().getName() + ": " + getXp(mat));
+			}
+		}
+
+		return table;
+	}
+
+	@Override
+	public String getXpMethodInfo() {
+		return "Xp is gained by placing blocks";
 	}
 }

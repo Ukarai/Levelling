@@ -18,8 +18,11 @@ public class ClassLevelUpEvent extends Event {
 		this.lClass = lClass;
 	}
 
-	@Override
 	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
 		return handlers;
 	}
 

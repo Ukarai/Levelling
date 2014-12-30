@@ -1,20 +1,25 @@
 package com.tribescommunity.levelling.skills.gathering;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import com.tribescommunity.levelling.Levelling;
 import com.tribescommunity.levelling.abilities.RightClickAbility;
 import com.tribescommunity.levelling.data.Skill;
 import com.tribescommunity.levelling.data.user.User;
+import com.tribescommunity.levelling.skills.LevellingSkill;
 
 /* 
  * Date: 18 Nov 2012
  * Time: 00:18:20
  * Maker: theguynextdoor
  */
-public class Archaeology extends com.tribescommunity.levelling.skills.Skill {
+public class Archaeology implements LevellingSkill {
 
 	@Override
 	public String getName() {
@@ -50,22 +55,18 @@ public class Archaeology extends com.tribescommunity.levelling.skills.Skill {
 		case GRAVEL:
 		case MYCEL:
 			double ran = Math.random();
-			
-			if (ran<= dropChanceNugget(user.getLevel(Skill.ARCHAEOLOGY))) {
+
+			if (ran <= dropChanceNugget(user.getLevel(Skill.ARCHAEOLOGY))) {
 				block.getLocation().getWorld().dropItem(block.getLocation(), new ItemStack(Material.GOLD_NUGGET, 1));
-			}
-			else if (ran <= dropChanceIngot(user.getLevel(Skill.ARCHAEOLOGY))) {
+			} else if (ran <= dropChanceIngot(user.getLevel(Skill.ARCHAEOLOGY))) {
 				block.getLocation().getWorld().dropItem(block.getLocation(), new ItemStack(Material.GOLD_INGOT, 1));
-			}
-			else if (ran <= dropChanceBlock(user.getLevel(Skill.ARCHAEOLOGY))) {
+			} else if (ran <= dropChanceBlock(user.getLevel(Skill.ARCHAEOLOGY))) {
 				block.getLocation().getWorld().dropItem(block.getLocation(), new ItemStack(Material.GOLD_BLOCK, 1));
-			}
-			else if (ran <= dropChanceBrick(user.getLevel(Skill.ARCHAEOLOGY))) {
-				ItemStack stone  = new ItemStack(Material.SMOOTH_BRICK, 1);
+			} else if (ran <= dropChanceBrick(user.getLevel(Skill.ARCHAEOLOGY))) {
+				ItemStack stone = new ItemStack(Material.SMOOTH_BRICK, 1);
 				stone.setDurability((short) 2);
 				block.getLocation().getWorld().dropItem(block.getLocation(), stone);
-			}
-			else if (ran <= dropChanceBlock(user.getLevel(Skill.ARCHAEOLOGY))) {
+			} else if (ran <= dropChanceBlock(user.getLevel(Skill.ARCHAEOLOGY))) {
 				double random = Math.random() * 100;
 
 				if (random > 0 && random <= 14.3)
@@ -102,11 +103,11 @@ public class Archaeology extends com.tribescommunity.levelling.skills.Skill {
 		double chance = 0.00005 / Levelling.MAX_SKILL_LEVEL;
 		return chance * level;
 	}
-	
+
 	public double dropChanceBrick(int level) {
 		double chance = 0.00175 / Levelling.MAX_SKILL_LEVEL;
 		return chance * level;
-	}	
+	}
 
 	public double dropTrash(int level) {
 		double chance = 0.00275 / Levelling.MAX_SKILL_LEVEL;
@@ -116,13 +117,30 @@ public class Archaeology extends com.tribescommunity.levelling.skills.Skill {
 	public boolean isSpade(ItemStack is) {
 		Material type = is.getType();
 
-		return type == Material.WOOD_SPADE || type == Material.STONE_SPADE || type == Material.IRON_SPADE || type == Material.GOLD_SPADE
-				|| type == Material.DIAMOND_SPADE;
+		return type == Material.WOOD_SPADE || type == Material.STONE_SPADE || type == Material.IRON_SPADE || type == Material.GOLD_SPADE || type == Material.DIAMOND_SPADE;
 	}
 
 	@Override
 	public RightClickAbility getAbility() {
 		// TODO ADD THIS
 		return null;
+	}
+
+	@Override
+	public List<String> getXpTable(int level) {
+		List<String> table = new ArrayList<>();
+
+		for (Material mat : Material.values()) {
+			if (getXp(mat) > 0) {
+				table.add(mat.getData().getName() + ": " + getXp(mat));
+			}
+		}
+
+		return table;
+	}
+
+	@Override
+	public String getXpMethodInfo() {
+		return "Xp is gained by digging blocks with a spade";
 	}
 }

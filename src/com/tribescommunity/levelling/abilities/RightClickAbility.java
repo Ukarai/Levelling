@@ -12,19 +12,18 @@ import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.tribescommunity.levelling.Levelling;
-import com.tribescommunity.levelling.skills.Skill;
+import com.tribescommunity.levelling.skills.LevellingSkill;
 
 public abstract class RightClickAbility {
 	protected Set<String> activePlayers;
 	protected Set<String> readiedPlayers;
 	protected Map<String, Long> cooldownPlayers;
 	protected String name;
-	protected Skill skill;
+	protected LevellingSkill skill;
 	protected com.tribescommunity.levelling.data.Skill skillEnum;
 	protected Levelling plugin;
 
-	public RightClickAbility(String name, Skill skill, com.tribescommunity.levelling.data.Skill skillEnum,
-			Levelling instance) {
+	public RightClickAbility(String name, LevellingSkill skill, com.tribescommunity.levelling.data.Skill skillEnum, Levelling instance) {
 		this.activePlayers = new HashSet<String>();
 		this.readiedPlayers = new HashSet<String>();
 		this.cooldownPlayers = new HashMap<String, Long>();
@@ -64,32 +63,27 @@ public abstract class RightClickAbility {
 							activePlayers.remove(player.getName());
 							cooldownPlayers.put(player.getName(), System.nanoTime());
 
-							player.sendMessage(ChatColor.GOLD + "[" + name + "] " + ChatColor.WHITE
-									+ "Ability de-activated");
+							player.sendMessage(ChatColor.GOLD + "[" + name + "] " + ChatColor.WHITE + "Ability de-activated");
 						}
 					}.runTaskLater(plugin, activeTime);
 
 					new BukkitRunnable() {
 						public void run() {
 							cooldownPlayers.remove(player.getName());
-							player.sendMessage(ChatColor.GOLD + "[" + name + "] " + ChatColor.WHITE
-									+ "Your cooldown has finished");
+							player.sendMessage(ChatColor.GOLD + "[" + name + "] " + ChatColor.WHITE + "Your cooldown has finished");
 						}
 					}.runTaskLater(plugin, activeTime + cdTime);
 
-				}
-				else {
+				} else {
 					String rt = new DecimalFormat("#.##").format(getRemaininCooldown(player.getName()));
-					player.sendMessage(ChatColor.GOLD + "[" + name + "] " + ChatColor.RED + "You need to wait " + rt
-							+ " seconds before you can use this again");
+					player.sendMessage(ChatColor.GOLD + "[" + name + "] " + ChatColor.RED + "You need to wait " + rt + " seconds before you can use this again");
 				}
 			}
 		}
 	}
 
 	public double getRemaininCooldown(String name) {
-		return cooldownPlayers.containsKey(name) ? (300 - plugin.getUser(name).getLevel(skillEnum))
-				- (System.nanoTime() - cooldownPlayers.get(name)) / 1000000000.0 : 0;
+		return cooldownPlayers.containsKey(name) ? (300 - plugin.getUser(name).getLevel(skillEnum)) - (System.nanoTime() - cooldownPlayers.get(name)) / 1000000000.0 : 0;
 	}
 
 	public void unready(Player player) {

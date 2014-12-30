@@ -37,10 +37,12 @@ import com.tribescommunity.levelling.skills.combat.Swords;
 import com.tribescommunity.levelling.skills.combat.Unarmed;
 import com.tribescommunity.levelling.skills.gathering.Archaeology;
 import com.tribescommunity.levelling.skills.gathering.Farming;
+import com.tribescommunity.levelling.skills.gathering.GoldPanning;
 import com.tribescommunity.levelling.skills.gathering.Mining;
 import com.tribescommunity.levelling.skills.gathering.Woodcutting;
 import com.tribescommunity.levelling.skills.misc.Building;
 import com.tribescommunity.levelling.skills.misc.Cooking;
+import com.tribescommunity.levelling.skills.misc.Enchanting;
 import com.tribescommunity.levelling.skills.misc.Lockpicking;
 import com.tribescommunity.levelling.skills.misc.Pickpocketing;
 import com.tribescommunity.levelling.skills.misc.Repair;
@@ -74,18 +76,18 @@ public class SkillsListener implements Listener {
 		backend = plugin.getBackend();
 		skillHandler = plugin.getSkillHandler();
 
-		mining = skillHandler.getMining();
-		archaeology = skillHandler.getArchaeology();
-		lockpicking = skillHandler.getLockpicking();
-		woodcutting = skillHandler.getWoodcutting();
-		farming = skillHandler.getFarming();
-		swords = skillHandler.getSwords();
-		unarmed = skillHandler.getUnarmed();
-		archery = skillHandler.getArchery();
-		pickpocketing = skillHandler.getPickpocketing();
-		repair = skillHandler.getRepair();
-		cooking = skillHandler.getCooking();
-		building = skillHandler.getBuilding();
+		mining = (Mining) skillHandler.getLevellingSkill(Skill.MINING);
+		archaeology = (Archaeology) skillHandler.getLevellingSkill(Skill.ARCHAEOLOGY);
+		lockpicking = (Lockpicking) skillHandler.getLevellingSkill(Skill.LOCKPICKING);
+		woodcutting = (Woodcutting) skillHandler.getLevellingSkill(Skill.WOODCUTTING);
+		farming = (Farming) skillHandler.getLevellingSkill(Skill.FARMING);
+		swords = (Swords) skillHandler.getLevellingSkill(Skill.SWORDS);
+		unarmed = (Unarmed) skillHandler.getLevellingSkill(Skill.UNARMED);
+		archery = (Archery) skillHandler.getLevellingSkill(Skill.ARCHERY);
+		pickpocketing = (Pickpocketing) skillHandler.getLevellingSkill(Skill.PICKPOCKETING);
+		repair = (Repair) skillHandler.getLevellingSkill(Skill.REPAIR);
+		cooking = (Cooking) skillHandler.getLevellingSkill(Skill.COOKING);
+		building = (Building) skillHandler.getLevellingSkill(Skill.BUILDING);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -139,7 +141,7 @@ public class SkillsListener implements Listener {
 
 							if (lockpicking.shouldUnlock(user)) {
 								player.sendMessage(ChatColor.GOLD + "[Lockpicking] " + ChatColor.WHITE + "Lockpick success!");
-								user.addXp(com.tribescommunity.levelling.data.Skill.LOCKPICKING, 192);
+								user.addXp(Skill.LOCKPICKING, Lockpicking.SUCCESS_XP);
 								b.setData((byte) (door.getData() ^ 4));
 
 								Block relative = b.getRelative(BlockFace.DOWN);
@@ -150,7 +152,7 @@ public class SkillsListener implements Listener {
 
 								Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new CloseDoorTask(b), 20 * 5);
 							} else {
-								user.addXp(com.tribescommunity.levelling.data.Skill.LOCKPICKING, 64);
+								user.addXp(Skill.LOCKPICKING, Lockpicking.FAIL_XP);
 								player.sendMessage(ChatColor.GOLD + "[Lockpicking] " + ChatColor.WHITE + "Lockpick failed");
 								user.recentLockpickFail = true;
 
@@ -234,9 +236,9 @@ public class SkillsListener implements Listener {
 
 				if (dif > 0.1 && dif < 0.5) {
 					e.setDamage(e.getDamage() + 2);
-					user.addXp(Skill.ARCHERY, archery.getXp(e.getEntityType()) + 64);
+					user.addXp(Skill.ARCHERY, archery.getXp(e.getEntityType(), user.getLevel(Skill.ARCHERY)) + 64);
 				} else {
-					user.addXp(Skill.ARCHERY, archery.getXp(e.getEntityType()));
+					user.addXp(Skill.ARCHERY, archery.getXp(e.getEntityType(), user.getLevel(Skill.ARCHERY)));
 				}
 			}
 		}
@@ -250,7 +252,7 @@ public class SkillsListener implements Listener {
 			if (player.isSneaking()) {
 				Player clicked = (Player) e.getRightClicked();
 				User user = plugin.getUser(player.getName());
-				
+
 				pickpocketing.handlePickpocketing(plugin, player, user, clicked);
 			}
 		}
@@ -269,7 +271,7 @@ public class SkillsListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void enchant(EnchantItemEvent e) {
-		plugin.getSkillHandler().getEnchanting().enchantEvent(e);
+		((Enchanting) plugin.getSkillHandler().getLevellingSkill(Skill.ENCHANTING)).enchantEvent(e);
 	}
 
 	@EventHandler(ignoreCancelled = true)
@@ -278,7 +280,7 @@ public class SkillsListener implements Listener {
 			if (e.getEntity() instanceof Player) {
 				Player player = (Player) e.getEntity();
 				User user = plugin.getUser(player.getName());
-				
+
 				if (player.isBlocking()) {
 					e.setDamage(e.getDamage() - swords.damageToBlock(user, e.getDamage()));
 				}
@@ -290,7 +292,7 @@ public class SkillsListener implements Listener {
 	public void furnace(FurnaceExtractEvent e) {
 		Player player = e.getPlayer();
 		User user = plugin.getUser(player.getName());
-		
+
 		user.addXp(Skill.COOKING, cooking.getFurnaceCookedXp(e.getItemType()) * e.getItemAmount());
 		user.addXp(Skill.REPAIR, repair.getXp(e.getItemType()) * e.getItemAmount());
 	}
@@ -299,7 +301,7 @@ public class SkillsListener implements Listener {
 	public void cookingCraftingBench(CraftItemEvent e) {
 		if (e.getWhoClicked() instanceof Player) {
 			User user = plugin.getUser(e.getWhoClicked().getName());
-			
+
 			user.addXp(Skill.COOKING, cooking.getCraftingBencheCookedXp(e.getRecipe().getResult().getType()));
 		}
 	}
@@ -326,7 +328,7 @@ public class SkillsListener implements Listener {
 			User user = plugin.getUser(player.getName());
 
 			if (user.getLevellingClass() == LevellingClass.GATHERER)
-				skillHandler.getGoldPanning().pan(plugin.getUser(e.getPlayer().getName()), e);
+				((GoldPanning) skillHandler.getLevellingSkill(Skill.GOLDPANNING)).pan(plugin.getUser(e.getPlayer().getName()), e);
 		}
 	}
 

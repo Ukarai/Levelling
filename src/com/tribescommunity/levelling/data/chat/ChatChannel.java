@@ -4,19 +4,21 @@ import org.bukkit.ChatColor;
 
 public enum ChatChannel {
 
-	ADMIN(ChatColor.DARK_RED, ChatColor.RED, ChatColor.RED, "channel.admin", "adminchat"),
-	MOD(ChatColor.DARK_PURPLE, ChatColor.LIGHT_PURPLE, ChatColor.LIGHT_PURPLE, "channel.mod", "modchat"),
-	VIP(ChatColor.DARK_BLUE, ChatColor.BLUE, ChatColor.BLUE, "channel.vip", "vipchat"),
-	PARTY(ChatColor.GREEN, ChatColor.GREEN, ChatColor.GREEN, "", "partychat"),
-	DEFAULT(null, null, null, null, null);
+	ADMIN("Admin", ChatColor.DARK_RED, ChatColor.RED, ChatColor.RED, "channel.admin", "adminchat"),
+	MOD("Mod", ChatColor.DARK_PURPLE, ChatColor.LIGHT_PURPLE, ChatColor.LIGHT_PURPLE, "channel.mod", "modchat"),
+	VIP("VIP", ChatColor.DARK_BLUE, ChatColor.BLUE, ChatColor.BLUE, "channel.vip", "vipchat"),
+	PARTY("Party", ChatColor.GREEN, ChatColor.GREEN, ChatColor.GREEN, "", "partychat"),
+	DEFAULT("Default", null, null, null, null, null);
 
+	private String name;
 	private ChatColor bracketColour;
 	private ChatColor nameColour;
 	private ChatColor textColour;
 	private String permission;
 	private String command;
 
-	private ChatChannel(ChatColor bracketColour, ChatColor nameColour, ChatColor textColour, String permission, String command) {
+	private ChatChannel(String name, ChatColor bracketColour, ChatColor nameColour, ChatColor textColour, String permission, String command) {
+		this.name = name;
 		this.bracketColour = bracketColour;
 		this.nameColour = nameColour;
 		this.textColour = textColour;
@@ -33,15 +35,11 @@ public enum ChatChannel {
 	}
 
 	public String getFormat(String playerName, String message) {
-		StringBuilder sb = new StringBuilder();
+		return ChatColor.GRAY + "[" + name() + "] " + bracketColour + "(" + nameColour + playerName + bracketColour + ") " + textColour + message;
+	}
 
-		sb.append(ChatColor.GRAY + "[" + name() + "] ");
-		sb.append(bracketColour + "(");
-		sb.append(nameColour + playerName);
-		sb.append(bracketColour + ") ");
-		sb.append(textColour + message);
-
-		return sb.toString();
+	public String getName() {
+		return name;
 	}
 
 }

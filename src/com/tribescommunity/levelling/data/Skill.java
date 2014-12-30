@@ -1,5 +1,6 @@
 package com.tribescommunity.levelling.data;
 
+import com.tribescommunity.levelling.skills.LevellingSkill;
 import com.tribescommunity.levelling.skills.combat.Archery;
 import com.tribescommunity.levelling.skills.combat.Swords;
 import com.tribescommunity.levelling.skills.combat.Unarmed;
@@ -47,7 +48,7 @@ public enum Skill {
 		return name;
 	}
 
-	public static com.tribescommunity.levelling.data.Skill getSkill(com.tribescommunity.levelling.skills.Skill skill) {
+	public static Skill getSkill(LevellingSkill skill) {
 		if (skill instanceof Mining) {
 			return MINING;
 		}

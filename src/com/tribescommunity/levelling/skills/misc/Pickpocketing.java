@@ -1,5 +1,7 @@
 package com.tribescommunity.levelling.skills.misc;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.bukkit.ChatColor;
@@ -13,13 +15,14 @@ import com.tribescommunity.levelling.Levelling;
 import com.tribescommunity.levelling.abilities.RightClickAbility;
 import com.tribescommunity.levelling.data.Skill;
 import com.tribescommunity.levelling.data.user.User;
+import com.tribescommunity.levelling.skills.LevellingSkill;
 
 /* 
  * Date: 20 Nov 2012
  * Time: 15:44:46
  * Maker: theguynextdoor
  */
-public class Pickpocketing extends com.tribescommunity.levelling.skills.Skill {
+public class Pickpocketing implements LevellingSkill {
 
 	public int xpGainedForSuccess;
 	public int xpGainedForFailOne;
@@ -33,7 +36,7 @@ public class Pickpocketing extends com.tribescommunity.levelling.skills.Skill {
 
 	@Override
 	public String getName() {
-		return com.tribescommunity.levelling.data.Skill.PICKPOCKETING.getName();
+		return Skill.PICKPOCKETING.getName();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -124,5 +127,21 @@ public class Pickpocketing extends com.tribescommunity.levelling.skills.Skill {
 	public RightClickAbility getAbility() {
 		// TODO ADD THIS
 		return null;
+	}
+
+	@Override
+	public List<String> getXpTable(int level) {
+		List<String> table = new ArrayList<>();
+
+		table.add("Succes: " + xpGainedForSuccess);
+		table.add("Fail (No item in random slot): " + xpGainedForFailOne);
+		table.add("Fail (Didn't even get inside their inv): " + xpGainedForFailTwo);
+
+		return table;
+	}
+
+	@Override
+	public String getXpMethodInfo() {
+		return "Xp is gained by pickpocketing a player (Right click a player, while sneaking and behind the player)";
 	}
 }

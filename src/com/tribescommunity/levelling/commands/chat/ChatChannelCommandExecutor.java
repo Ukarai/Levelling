@@ -65,7 +65,7 @@ public class ChatChannelCommandExecutor implements CommandExecutor {
 		}
 
 		if (args.length > 0) {
-			String message = StringUtils.join(args);
+			String message = StringUtils.join(args, ' ');
 			String format = channel.getFormat(sender.getName(), message);
 
 			for (Player player : Bukkit.getOnlinePlayers()) {
@@ -82,7 +82,7 @@ public class ChatChannelCommandExecutor implements CommandExecutor {
 				}
 			}
 
-			plugin.getLogger().info(format);
+			plugin.getChatLogger(channel).info(format);
 		} else {
 			sender.sendMessage(ChatColor.RED + "Please enter a message");
 		}

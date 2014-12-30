@@ -89,7 +89,7 @@ public class ClassCommandExecutor implements CommandExecutor {
 					sender.sendMessage("Gatherer - " + "Gold panning skill");
 					sender.sendMessage("Blacksmith - " + "No chance to lose enchant on repairing an item");
 					sender.sendMessage("Citizen - " + "NOT IMPLEMENTED");
-					sender.sendMessage("Farmer - " + "heal potion effect applied for 5 seconds after eating food");
+					sender.sendMessage("Farmer - " + "heal potion effect applied for 3 seconds after eating food");
 				}
 			} else if (args.length == 2) {
 				if (args[0].equalsIgnoreCase("train")) {

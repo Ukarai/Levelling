@@ -39,6 +39,11 @@ public class LevelAdminCommandExecutor implements CommandExecutor {
 						}
 						sender.sendMessage(ChatColor.GOLD + "[Levelling] " + ChatColor.RED + "No skill found with the name '" + args[3] + "'");
 					}
+				} else if (args[1].equalsIgnoreCase("title")) {
+					if (args[2].equalsIgnoreCase("remove")) {
+						user.setTitle("");
+						sender.sendMessage(user.getName() + ChatColor.GOLD + "'s title has been removed");
+					}
 				}
 			} else {
 				sender.sendMessage(ChatColor.GOLD + "[Levelling] " + ChatColor.RED + "No user with the name '" + args[0] + "'");

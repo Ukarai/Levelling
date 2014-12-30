@@ -17,10 +17,8 @@ import com.tribescommunity.levelling.Levelling;
 public class Party {
 	private String name;
 	private Set<String> people;
-	private Levelling plugin;
 
 	public Party(Levelling plugin, String name) {
-		this.plugin = plugin;
 		this.name = name;
 		people = new HashSet<String>();
 		plugin.parties.put(name, this);
@@ -49,7 +47,7 @@ public class Party {
 			}
 		}
 	}
-	
+
 	public boolean inParty(String name) {
 		return people.contains(name);
 	}

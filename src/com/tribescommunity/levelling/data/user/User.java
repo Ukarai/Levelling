@@ -1,18 +1,20 @@
 package com.tribescommunity.levelling.data.user;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import com.tribescommunity.levelling.Levelling;
+import com.tribescommunity.levelling.achievements.AchievementTracker;
 import com.tribescommunity.levelling.data.LevellingClass;
 import com.tribescommunity.levelling.data.Skill;
 import com.tribescommunity.levelling.data.chat.ChatChannel;
 import com.tribescommunity.levelling.data.party.Party;
-import com.tribescommunity.levelling.skills.misc.enchanting.EnchantMenu;
 
 /* 
  * Date: 15 Nov 2012
@@ -28,8 +30,9 @@ public class User {
 	private Party party;
 	private Set<String> recentlyPickpocketed = new HashSet<String>();
 	public boolean recentLockpickFail = false;
-	private EnchantMenu enchantMenu;
 	private ChatChannel chatChannel;
+	private AchievementTracker achievementTracker;
+	private String title;
 
 	public User(Levelling instance, String name) {
 		plugin = instance;
@@ -42,8 +45,15 @@ public class User {
 		}
 
 		plugin.getUsers().put(name, this);
-		enchantMenu = new EnchantMenu(instance);
 		chatChannel = ChatChannel.DEFAULT;
+		achievementTracker = new AchievementTracker();
+		title = "";
+
+		try {
+			plugin.getBackend().loadAchievements(this);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public User(String fromFile, Levelling plugin) {
@@ -69,8 +79,15 @@ public class User {
 			}
 		}
 
-		enchantMenu = new EnchantMenu(plugin);
 		chatChannel = ChatChannel.DEFAULT;
+
+		try {
+			plugin.getBackend().loadAchievements(this);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		title = split[split.length - 1].equals(" ") ? "" : split[split.length - 1];
 	}
 
 	public String getName() {
@@ -116,14 +133,13 @@ public class User {
 
 			if (primary == skill) {
 				xp *= LevellingClass.PRIMARY_MODIFIER;
-				xp = (long) Math.floor(xp);
 			} else if (secondary == skill) {
 				xp *= LevellingClass.SECONDARY_MODIFIER;
-				xp = (long) Math.floor(xp);
 			} else if (tertiary == skill) {
 				xp *= LevellingClass.TERTIARY_MODIFIER;
-				xp = (long) Math.floor(xp);
 			}
+
+			xp = (long) Math.floor(xp);
 		}
 		levelStore.addXp(skill, xp);
 	}
@@ -168,6 +184,14 @@ public class User {
 	}
 
 	public void untrainClass() {
+		for (int i = 0; i <= levelStore.getClassLevel(); i++) {
+			System.out.println(levellingClass.getName(i));
+
+			if (ChatColor.stripColor(title).equalsIgnoreCase(levellingClass.getName(i))) {
+				title = "";
+			}
+		}
+
 		levellingClass = null;
 	}
 
@@ -178,6 +202,10 @@ public class User {
 			if (lClass.hasRequirments(this, i)) {
 				levelStore.setClassLevel(i);
 			}
+		}
+
+		if (title.length() == 0) {
+			title = lClass.getColour() + lClass.getName(levelStore.getClassLevel());
 		}
 	}
 
@@ -227,11 +255,11 @@ public class User {
 			}
 		}
 
-		return sb.toString();
-	}
+		sb.append(":");
+		sb.append(title.length() == 0 ? " " : title);
+		sb.append(":");
 
-	public EnchantMenu getEnchantMenu() {
-		return enchantMenu;
+		return sb.toString();
 	}
 
 	public ChatChannel getChatChannel() {
@@ -243,5 +271,22 @@ public class User {
 			channel = ChatChannel.DEFAULT;
 
 		this.chatChannel = channel;
+	}
+
+	public AchievementTracker getAchievementTracker() {
+		return achievementTracker;
+	}
+
+	public void setAchievementTracker(AchievementTracker achievementTracker2) {
+		if (achievementTracker2 != null)
+			this.achievementTracker = achievementTracker2;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 }

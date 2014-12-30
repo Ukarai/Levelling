@@ -20,6 +20,11 @@ public class SaveTask implements Runnable {
 	@Override
 	public void run() {
 		backend.saveAllTxt();
+		try {
+			backend.saveAchievements();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		timesRan++;
 
 		if (timesRan % 6 == 0) {

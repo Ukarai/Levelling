@@ -8,13 +8,19 @@ import org.bukkit.inventory.ItemStack;
 
 import com.tribescommunity.levelling.Levelling;
 import com.tribescommunity.levelling.abilities.RightClickAbility;
+import com.tribescommunity.levelling.data.Skill;
 import com.tribescommunity.levelling.data.user.User;
-import com.tribescommunity.levelling.skills.Skill;
+import com.tribescommunity.levelling.skills.LevellingSkill;
+import com.tribescommunity.levelling.skills.gathering.Farming;
 
 public class FarmingAbility extends RightClickAbility {
 
-	public FarmingAbility(String name, Skill skill, Levelling plugin) {
-		super(name, skill, com.tribescommunity.levelling.data.Skill.FARMING, plugin);
+	private Farming farming;
+
+	public FarmingAbility(String name, LevellingSkill skill, Levelling plugin) {
+		super(name, skill, Skill.FARMING, plugin);
+
+		farming = (Farming) skill;
 	}
 
 	@Override
@@ -23,9 +29,9 @@ public class FarmingAbility extends RightClickAbility {
 			BlockBreakEvent e = (BlockBreakEvent) ev;
 			Player player = e.getPlayer();
 			User user = plugin.getUser(player.getName());
-			int radius = plugin.getSkillHandler().getFarming().getFullHarvestRadius(user);
+			int radius = farming.getFullHarvestRadius(user);
 
-			if (plugin.getSkillHandler().getFarming().getXp(e.getBlock().getType()) > 0) {
+			if (farming.getXp(e.getBlock().getType()) > 0) {
 				int blockX = e.getBlock().getLocation().getBlockX();
 				int blockY = e.getBlock().getLocation().getBlockY();
 				int blockZ = e.getBlock().getLocation().getBlockZ();
@@ -34,15 +40,15 @@ public class FarmingAbility extends RightClickAbility {
 					for (int zz = -radius; zz < radius; zz++) {
 						Block block = player.getWorld().getBlockAt(blockX + xx, blockY, blockZ + zz);
 
-						if (plugin.getSkillHandler().getFarming().getXp(block.getType()) > 0) {
+						if (farming.getXp(block.getType()) > 0) {
 							BlockBreakEvent blockBreakEvent = new BlockBreakEvent(block, player);
-							
+
 							if (!blockBreakEvent.isCancelled()) {
 								for (ItemStack is : block.getDrops()) {
 									block.getWorld().dropItemNaturally(block.getLocation(), is);
 								}
 								block.breakNaturally();
-								user.addXp(com.tribescommunity.levelling.data.Skill.FARMING, 16);
+								user.addXp(Skill.FARMING, 16);
 							}
 						}
 					}

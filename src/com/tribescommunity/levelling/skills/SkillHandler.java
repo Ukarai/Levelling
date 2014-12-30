@@ -1,6 +1,10 @@
 package com.tribescommunity.levelling.skills;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.tribescommunity.levelling.Levelling;
+import com.tribescommunity.levelling.data.Skill;
 import com.tribescommunity.levelling.skills.combat.Archery;
 import com.tribescommunity.levelling.skills.combat.Swords;
 import com.tribescommunity.levelling.skills.combat.Unarmed;
@@ -24,93 +28,30 @@ import com.tribescommunity.levelling.skills.misc.Repair;
 public class SkillHandler {
 
 	private Levelling plugin;
-	protected Mining mining;
-	protected Archaeology archaeology;
-	protected Woodcutting woodcutting;
-	protected Lockpicking lockpicking;
-	protected Pickpocketing pickpocketing;
-	protected Farming farming;
-	protected Swords swords;
-	protected Unarmed unarmed;
-	protected Archery archery;
-	protected Repair repair;
-	protected Cooking cooking;
-	protected Building building;
-	protected GoldPanning goldPanning;
-	protected Enchanting enchanting;
+	private Map<Skill, LevellingSkill> skills;
 
 	public SkillHandler(Levelling instance) {
 		plugin = instance;
+		skills = new HashMap<>();
 
-		mining = new Mining(plugin);
-		archaeology = new Archaeology();
-		woodcutting = new Woodcutting();
-		lockpicking = new Lockpicking();
-		pickpocketing = new Pickpocketing();
-		farming = new Farming(plugin);
-		swords = new Swords();
-		unarmed = new Unarmed();
-		archery = new Archery();
-		repair = new Repair();
-		cooking = new Cooking();
-		building = new Building();
-		goldPanning = new GoldPanning();
-		enchanting = new Enchanting(plugin);
+		skills.put(Skill.MINING, new Mining(plugin));
+		skills.put(Skill.ARCHAEOLOGY, new Archaeology());
+		skills.put(Skill.WOODCUTTING, new Woodcutting());
+		skills.put(Skill.LOCKPICKING, new Lockpicking());
+		skills.put(Skill.PICKPOCKETING, new Pickpocketing());
+		skills.put(Skill.FARMING, new Farming(plugin));
+		skills.put(Skill.SWORDS, new Swords());
+		skills.put(Skill.UNARMED, new Unarmed());
+		skills.put(Skill.ARCHERY, new Archery());
+		skills.put(Skill.REPAIR, new Repair());
+		skills.put(Skill.COOKING, new Cooking());
+		skills.put(Skill.BUILDING, new Building());
+		skills.put(Skill.GOLDPANNING, new GoldPanning());
+		skills.put(Skill.ENCHANTING, new Enchanting(plugin));
 	}
 
-	public Mining getMining() {
-		return mining;
+	public LevellingSkill getLevellingSkill(Skill skill) {
+		return skills.get(skill);
 	}
 
-	public Archaeology getArchaeology() {
-		return archaeology;
-	}
-
-	public Woodcutting getWoodcutting() {
-		return woodcutting;
-	}
-
-	public Lockpicking getLockpicking() {
-		return lockpicking;
-	}
-
-	public Pickpocketing getPickpocketing() {
-		return pickpocketing;
-	}
-
-	public Farming getFarming() {
-		return farming;
-	}
-
-	public Swords getSwords() {
-		return swords;
-	}
-
-	public Unarmed getUnarmed() {
-		return unarmed;
-	}
-
-	public Archery getArchery() {
-		return archery;
-	}
-
-	public Repair getRepair() {
-		return repair;
-	}
-
-	public Cooking getCooking() {
-		return cooking;
-	}
-
-	public Building getBuilding() {
-		return building;
-	}
-
-	public GoldPanning getGoldPanning() {
-		return goldPanning;
-	}
-
-	public Enchanting getEnchanting() {
-		return enchanting;
-	}
 }

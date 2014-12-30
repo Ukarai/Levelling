@@ -4,6 +4,10 @@
  */
 package com.tribescommunity.levelling.skills.gathering;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -15,13 +19,13 @@ import org.bukkit.inventory.ItemStack;
 import com.tribescommunity.levelling.Levelling;
 import com.tribescommunity.levelling.abilities.RightClickAbility;
 import com.tribescommunity.levelling.data.user.User;
-import com.tribescommunity.levelling.skills.Skill;
+import com.tribescommunity.levelling.skills.LevellingSkill;
 
 /**
  * 
  * @author David
  */
-public class GoldPanning extends Skill {
+public class GoldPanning implements LevellingSkill {
 
 	public int SUCCESS_XP = 128;
 	public int FAIL_XP = 64;
@@ -85,5 +89,20 @@ public class GoldPanning extends Skill {
 
 	public boolean shouldDropLoot(int level) {
 		return Math.random() <= ((0.4 / Levelling.MAX_SKILL_LEVEL) * level);
+	}
+
+	@Override
+	public List<String> getXpTable(int level) {
+		List<String> table = new ArrayList<>();
+
+		table.add(ChatColor.GOLD + "Success: " + ChatColor.WHITE + SUCCESS_XP + " * (1 + (level / 100))");
+		table.add(ChatColor.GOLD + "Fail: " + ChatColor.WHITE + FAIL_XP + " * (1 + (level / 200))");
+
+		return table;
+	}
+
+	@Override
+	public String getXpMethodInfo() {
+		return "Xp is gained by using a panning bowl in shallow running water";
 	}
 }

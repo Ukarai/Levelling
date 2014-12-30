@@ -13,7 +13,7 @@ public enum LevellingClass {
 	GATHERER(ChatColor.BLUE, "Gatherer", "Hoarder", "Connoisseur", MINING, ARCHAEOLOGY, WOODCUTTING),
 	BLACKSMITH(ChatColor.DARK_GRAY, "Blacksmith", "Journeyman", " Mastersmith", REPAIR, SWORDS, MINING),
 	CITIZEN(ChatColor.RED, "Citizen", "Settler", "Pioneer", BUILDING, COOKING, UNARMED),
-	FARMER(ChatColor.GOLD, "Farmer", "Harvester", "Agronomist", FARMING, GOLDPANNING, BUILDING);
+	FARMER(ChatColor.GOLD, "Farmer", "Harvester", "Agronomist", FARMING, ARCHAEOLOGY, BUILDING);
 
 	public static final int MAX_LEVEL = 9;
 	public static final double PRIMARY_MODIFIER = 1.2;

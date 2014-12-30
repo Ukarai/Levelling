@@ -118,6 +118,7 @@ public class LevelStore {
 
 		if (Bukkit.getPlayerExact(name) != null) {
 			Player player = Bukkit.getPlayerExact(name);
+
 			player.sendMessage(getClassLevelUpMsg(player));
 		}
 	}

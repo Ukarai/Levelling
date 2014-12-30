@@ -18,6 +18,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import com.tribescommunity.levelling.Levelling;
+import com.tribescommunity.levelling.achievements.AchievementTracker;
 import com.tribescommunity.levelling.data.user.User;
 
 /* 
@@ -30,6 +31,8 @@ public class Backend {
 	public Levelling plugin;
 	private List<File> saveFiles = new ArrayList<File>();
 	public Map<String, BufferedWriter> bws;
+	private File achievementTrackFile;
+	private File achievementGotFile;
 
 	public Backend(Levelling instance) {
 		plugin = instance;
@@ -48,6 +51,27 @@ public class Backend {
 			}
 
 			saveFiles.add(file);
+		}
+
+		File achievementTrackFolder = new File(plugin.getDataFolder() + File.separator + "Achievements");
+		achievementTrackFolder.mkdirs();
+
+		achievementTrackFile = new File(plugin.getDataFolder() + File.separator + "Achievements", "Achievement Tracking.txt");
+		if (!achievementTrackFile.exists()) {
+			try {
+				achievementTrackFile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		achievementGotFile = new File(plugin.getDataFolder() + File.separator + "Achievements", "Achievement Gotten.txt");
+		if (!achievementGotFile.exists()) {
+			try {
+				achievementGotFile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 		try {
@@ -71,7 +95,10 @@ public class Backend {
 		if (plugin.getUsers().containsKey(name))
 			return plugin.getUsers().get(name);
 		else {
-			return new User(plugin, name);
+			User user = new User(plugin, name);
+
+			plugin.getUsers().put(name, user);
+			return user;
 		}
 	}
 
@@ -82,24 +109,8 @@ public class Backend {
 			bw = new BufferedWriter(new FileWriter(plugin.getUsersFile()));
 
 			for (User user : plugin.getUsers().values()) {
-				boolean hasMine = user.getXp(Skill.MINING) != 0 && user.getLevel(Skill.MINING) != 0;
-				boolean hasArch = user.getXp(Skill.ARCHAEOLOGY) != 0 || user.getLevel(Skill.ARCHAEOLOGY) != 0;
-				boolean hasLock = user.getXp(Skill.LOCKPICKING) != 0 || user.getLevel(Skill.LOCKPICKING) != 0;
-				boolean hasWood = user.getXp(Skill.WOODCUTTING) != 0 || user.getLevel(Skill.WOODCUTTING) != 0;
-				boolean hasPick = user.getXp(Skill.PICKPOCKETING) != 0 || user.getLevel(Skill.PICKPOCKETING) != 0;
-				boolean hasFarm = user.getXp(Skill.FARMING) != 0 || user.getLevel(Skill.FARMING) != 0;
-				boolean hasSwords = user.getXp(Skill.SWORDS) != 0 || user.getLevel(Skill.SWORDS) != 0;
-				boolean hasArchery = user.getXp(Skill.ARCHERY) != 0 || user.getLevel(Skill.ARCHERY) != 0;
-				boolean hasUnarmed = user.getXp(Skill.UNARMED) != 0 || user.getLevel(Skill.UNARMED) != 0;
-				boolean hasRepair = user.getXp(Skill.REPAIR) != 0 || user.getLevel(Skill.REPAIR) != 0;
-				boolean hasEnchant = user.getXp(Skill.ENCHANTING) != 0 || user.getLevel(Skill.ENCHANTING) != 0;
-				boolean hasCooking = user.getXp(Skill.COOKING) != 0 || user.getLevel(Skill.COOKING) != 0;
-
-				if (user.inParty() || hasMine || hasArch || hasLock || hasWood || hasPick || hasFarm || hasSwords || hasArchery || hasUnarmed || hasRepair || hasEnchant
-						|| hasCooking) {
-					bw.append(user.getSaveString());
-					bw.newLine();
-				}
+				bw.append(user.getSaveString());
+				bw.newLine();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -110,6 +121,56 @@ public class Backend {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void saveAchievements() throws IOException {
+		BufferedWriter bw = new BufferedWriter(new FileWriter(achievementTrackFile));
+		for (User user : plugin.getUsers().values()) {
+			bw.append(user.getAchievementTracker().trackingStatsToString(user));
+			bw.newLine();
+		}
+		bw.close();
+
+		bw = new BufferedWriter(new FileWriter(achievementGotFile));
+		for (User user : plugin.getUsers().values()) {
+			bw.append(user.getAchievementTracker().achievementsGottenToString(user));
+			bw.newLine();
+		}
+
+		bw.close();
+	}
+
+	public void loadAchievements(User user) throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(achievementTrackFile));
+		String achievementTrackString = "";
+		String achievementGotString = "";
+		String line;
+
+		while ((line = br.readLine()) != null) {
+			String[] split = line.split(":");
+
+			if (split[0].equals(user.getName())) {
+				achievementTrackString = line.substring(user.getName().length() + 1);
+			}
+		}
+		br.close();
+
+		br = new BufferedReader(new FileReader(achievementGotFile));
+
+		while ((line = br.readLine()) != null) {
+			String[] split = line.split(":");
+
+			if (split[0].equals(user.getName())) {
+				achievementGotString = line.substring(user.getName().length() + 1);
+			}
+		}
+
+		br.close();
+
+		if (achievementTrackString.length() == 0 || achievementGotString.length() == 0)
+			user.setAchievementTracker(new AchievementTracker());
+		else
+			user.setAchievementTracker(new AchievementTracker(achievementTrackString, achievementGotString));
 	}
 
 	public void initBws() throws IOException {

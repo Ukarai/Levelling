@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -53,9 +54,11 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void chat(AsyncPlayerChatEvent e) {
 		Player player = e.getPlayer();
+		String message = e.getMessage();
 		User user = backend.getUser(player.getName());
 		ChatChannel currentChannel = user.getChatChannel();
 		String format;
+		StringBuilder logString = new StringBuilder();
 
 		if (user.hasClass()) {
 			user.checkClassLevel();
@@ -72,15 +75,15 @@ public class PlayerListener implements Listener {
 		currentChannel = user.getChatChannel();
 
 		if (currentChannel == ChatChannel.DEFAULT) {
-			String lClass = user.hasClass() ? user.getLevellingClass().getColour() + user.getLevellingClass().getName(user.getClassLevel()) + " " : "";
+			String title = user.getTitle().length() == 0 ? "" : user.getTitle() + " ";
 			String group = plugin.getPerm().getPrimaryGroup(player);
 			String permWorld = plugin.getConfigInstance().getMainPermWorldName();
 			String prefix = ChatColor.translateAlternateColorCodes('&', plugin.getChat().getGroupPrefix(permWorld, group));
 			String displayName = player.getDisplayName();
-			String message = e.getMessage();
-			format = "<" + lClass + prefix + displayName + ChatColor.WHITE + "> " + message;
+			format = title + prefix + ChatColor.stripColor(displayName) + ChatColor.WHITE + ": " + message;
 
 			e.setFormat(format);
+			logString.append(player.getName() + ": " + message);
 		} else {
 			e.getRecipients().clear();
 
@@ -94,10 +97,18 @@ public class PlayerListener implements Listener {
 
 			format = currentChannel.getFormat(player.getName(), e.getMessage());
 
+			if (currentChannel == ChatChannel.PARTY) {
+				String partyName = user.getParty().getName();
+
+				logString.append("[" + partyName + "] " + player.getName() + ": " + message);
+			} else {
+				logString.append(player.getName() + ": " + message);
+			}
+
 			e.setFormat(format);
 		}
 
-		plugin.getLogger().info(format);
+		plugin.getChatLogger(currentChannel).info(logString.toString());
 	}
 
 	@SuppressWarnings("deprecation")
@@ -133,6 +144,11 @@ public class PlayerListener implements Listener {
 				}
 			}
 		}
+	}
+
+	@EventHandler(ignoreCancelled = true)
+	public void command(PlayerCommandPreprocessEvent e) {
+		plugin.getCommandLogger().info(e.getPlayer().getName() + " issued the command '" + e.getMessage() + "'");
 	}
 
 }

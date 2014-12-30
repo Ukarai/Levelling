@@ -62,14 +62,15 @@ commands:
   repair:
     description: repair command
     usage: /<command>
-  smithing:
-    descrription: smithing command
-    usage: /<command>
+    aliases: [smithing]
   cooking:
     description: cooking command
     usage: /<command>
   building:
     description: building comnd
+    usage: /<command>
+  goldpanning:
+    description: goldpanning command
     usage: /<command>
   adminchat:
     description: admin chat command
@@ -83,3 +84,13 @@ commands:
     description: vip chat command
     usage: /<command> <message>
     aliases: [v, vc]
+  achievements:
+    description: achievement command
+    usage: /<command>
+    aliases: [achieve, ach]
+  title:
+    description: title command
+    usage: /<command> set <title>
+  titles:
+    description: titles command
+    usage: /<command>

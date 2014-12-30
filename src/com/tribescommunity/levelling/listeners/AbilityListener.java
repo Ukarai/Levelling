@@ -13,6 +13,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.tribescommunity.levelling.Levelling;
+import com.tribescommunity.levelling.data.Skill;
 import com.tribescommunity.levelling.skills.SkillHandler;
 import com.tribescommunity.levelling.skills.gathering.Farming;
 import com.tribescommunity.levelling.skills.gathering.Mining;
@@ -29,8 +30,8 @@ public class AbilityListener implements Listener {
 	public AbilityListener(Levelling instance) {
 		plugin = instance;
 		skillHandler = plugin.getSkillHandler();
-		mining = skillHandler.getMining();
-		farming = skillHandler.getFarming();
+		mining = (Mining) skillHandler.getLevellingSkill(Skill.MINING);
+		farming = (Farming) skillHandler.getLevellingSkill(Skill.FARMING);
 		dontActivateOn = new HashSet<Material>();
 
 		dontActivateOn.add(Material.IRON_BLOCK);
@@ -82,7 +83,7 @@ public class AbilityListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void farmingAbility(BlockBreakEvent e) {
 		Player player = e.getPlayer();
-		
+
 		if (farming.getAbility().isReady(player) && farming.isHoe(player.getItemInHand())) {
 			farming.getAbility().activate(player);
 		}

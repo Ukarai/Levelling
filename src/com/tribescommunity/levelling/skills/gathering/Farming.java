@@ -1,5 +1,8 @@
 package com.tribescommunity.levelling.skills.gathering;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
@@ -7,15 +10,16 @@ import org.bukkit.inventory.ItemStack;
 import com.tribescommunity.levelling.Levelling;
 import com.tribescommunity.levelling.abilities.RightClickAbility;
 import com.tribescommunity.levelling.abilities.gathering.FarmingAbility;
+import com.tribescommunity.levelling.data.Skill;
 import com.tribescommunity.levelling.data.user.User;
-import com.tribescommunity.levelling.skills.Skill;
+import com.tribescommunity.levelling.skills.LevellingSkill;
 
 /* 
  * Date: 28 Nov 2012
  * Time: 08:34:31
  * Maker: theguynextdoor
  */
-public class Farming extends Skill {
+public class Farming implements LevellingSkill {
 
 	RightClickAbility ability;
 
@@ -25,7 +29,7 @@ public class Farming extends Skill {
 
 	@Override
 	public String getName() {
-		return com.tribescommunity.levelling.data.Skill.FARMING.getName();
+		return Skill.FARMING.getName();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -34,8 +38,7 @@ public class Farming extends Skill {
 		if (getXp(type) > 0) {
 			byte data = block.getData();
 
-			if ((type == Material.MELON_BLOCK || type == Material.PUMPKIN || type == Material.BROWN_MUSHROOM || type == Material.RED_MUSHROOM)
-					&& !block.hasMetadata(Levelling.USER_PLACED_META_STRING))
+			if ((type == Material.MELON_BLOCK || type == Material.PUMPKIN || type == Material.BROWN_MUSHROOM || type == Material.RED_MUSHROOM) && !block.hasMetadata(Levelling.USER_PLACED_META_STRING))
 				return true;
 			if (type == Material.CARROT || type == Material.POTATO)
 				return data >= 3;
@@ -96,5 +99,23 @@ public class Farming extends Skill {
 			return 6;
 		} else
 			return 0;
+	}
+
+	@Override
+	public List<String> getXpTable(int level) {
+		List<String> table = new ArrayList<>();
+
+		for (Material mat : Material.values()) {
+			if (getXp(mat) > 0) {
+				table.add(mat.getData().getName() + ": " + getXp(mat));
+			}
+		}
+
+		return table;
+	}
+
+	@Override
+	public String getXpMethodInfo() {
+		return "Xp is gained by harvesting crops with a hoe";
 	}
 }

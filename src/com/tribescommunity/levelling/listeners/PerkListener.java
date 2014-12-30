@@ -15,6 +15,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -113,11 +114,11 @@ public class PerkListener implements Listener {
 
 		if (user.getLevellingClass() == LevellingClass.FARMER) {
 			if (isFood(e.getItem())) {
-				player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 20 * 5, 1));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 20 * 3, 1));
 			}
 		}
 	}
-
+	
 	public boolean isFood(ItemStack is) {
 		if (is != null) {
 			switch (is.getType()) {

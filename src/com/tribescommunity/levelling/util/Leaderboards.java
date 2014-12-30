@@ -84,6 +84,7 @@ public class Leaderboards {
 		public int compare(User u1, User u2) {
 			Integer popularity1 = map.get(u1);
 			Integer popularity2 = map.get(u2);
+			
 			return popularity1.compareTo(popularity2);
 		}
 	}

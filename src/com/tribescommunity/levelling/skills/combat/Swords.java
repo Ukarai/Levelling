@@ -1,23 +1,28 @@
 package com.tribescommunity.levelling.skills.combat;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import com.tribescommunity.levelling.abilities.RightClickAbility;
+import com.tribescommunity.levelling.data.Skill;
 import com.tribescommunity.levelling.data.user.User;
-import com.tribescommunity.levelling.skills.Skill;
+import com.tribescommunity.levelling.skills.LevellingSkill;
 
 /* 
  * Date: 30 Nov 2012
  * Time: 19:53:34
  * Maker: theguynextdoor
  */
-public class Swords extends Skill {
+public class Swords implements LevellingSkill {
 
 	@Override
 	public String getName() {
-		return com.tribescommunity.levelling.data.Skill.SWORDS.getName();
+		return Skill.SWORDS.getName();
 	}
 
 	public int getXp(EntityType type) {
@@ -60,7 +65,24 @@ public class Swords extends Skill {
 
 	@Override
 	public RightClickAbility getAbility() {
-		// TODO ADD THIS
 		return null;
+	}
+
+	@Override
+	public List<String> getXpTable(int level) {
+		List<String> table = new ArrayList<>();
+
+		for (EntityType et : EntityType.values()) {
+			if (getXp(et) > 0) {
+				table.add(StringUtils.capitalize(et.toString().toLowerCase()) + ": " + getXp(et));
+			}
+		}
+
+		return table;
+	}
+
+	@Override
+	public String getXpMethodInfo() {
+		return "Xp is gained by hitting certain mobs with a sword";
 	}
 }

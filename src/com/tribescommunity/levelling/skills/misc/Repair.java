@@ -1,29 +1,33 @@
 package com.tribescommunity.levelling.skills.misc;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import net.minecraft.util.org.apache.commons.lang3.StringUtils;
-
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.tribescommunity.levelling.abilities.RightClickAbility;
 import com.tribescommunity.levelling.data.LevellingClass;
+import com.tribescommunity.levelling.data.Skill;
 import com.tribescommunity.levelling.data.repair.ArmourMaterial;
 import com.tribescommunity.levelling.data.repair.ToolMaterial;
 import com.tribescommunity.levelling.data.user.User;
-import com.tribescommunity.levelling.skills.Skill;
+import com.tribescommunity.levelling.skills.LevellingSkill;
 
 /* 
  * Date: 2 Dec 2012
  * Time: 19:18:26
  * Maker: theguynextdoor
  */
-public class Repair extends Skill {
+public class Repair implements LevellingSkill {
 
 	private Map<Material, Short> maxDurabilities;
 
@@ -97,10 +101,9 @@ public class Repair extends Skill {
 
 	@Override
 	public String getName() {
-		return com.tribescommunity.levelling.data.Skill.REPAIR.getName();
+		return Skill.REPAIR.getName();
 	}
 
-	@SuppressWarnings("deprecation")
 	public void repair(User user, Player player, ItemStack is) {
 		if (is != null) {
 			Material type = is.getType();
@@ -121,6 +124,13 @@ public class Repair extends Skill {
 
 				for (ItemStack is2 : inv.getContents()) {
 					if (is2 != null) {
+						if (is2.hasItemMeta()) {
+							ItemMeta im = is2.getItemMeta();
+
+							if (!im.getDisplayName().equals(StringUtils.capitalize(itemStack.getType().toString().toLowerCase()))) {
+								continue;
+							}
+						}
 						if (is2.getType() == want) {
 							mats += is2.getAmount();
 						}
@@ -160,7 +170,14 @@ public class Repair extends Skill {
 						if (is.getEnchantments().size() > 0) {
 							if (user.getLevellingClass() != LevellingClass.BLACKSMITH) {
 								if (Math.random() > 0.5) {
-									is.getItemMeta().getEnchants().clear();
+									ItemMeta im = is.getItemMeta();
+
+									for (Enchantment enchant : im.getEnchants().keySet()) {
+										im.removeEnchant(enchant);
+									}
+
+									is.setItemMeta(im);
+
 									if (ToolMaterial.getToolMaterial(is) != null) {
 										player.sendMessage("The magic fades from your weapon");
 									} else {
@@ -341,5 +358,28 @@ public class Repair extends Skill {
 	public RightClickAbility getAbility() {
 		// TODO ADD THIS
 		return null;
+	}
+
+	@Override
+	public List<String> getXpTable(int level) {
+		List<String> table = new ArrayList<>();
+
+		for (ToolMaterial tm : ToolMaterial.values()) {
+			table.add(tm.getMaterial().getData().getName() + " (Tool): " + getXp(tm));
+		}
+		for (ArmourMaterial am : ArmourMaterial.values()) {
+			table.add(am.getMaterial().getData().getName() + " (Armour): " + getXp(am));
+		}
+		for (Material m : Material.values()) {
+			if (getXp(m) > 0)
+				table.add(m.getData().getName() + " (Smelting): " + getXp(m));
+		}
+
+		return table;
+	}
+
+	@Override
+	public String getXpMethodInfo() {
+		return "Xp is gained by repairing an item (Right click an iron block with the item in hand and the required items in your inv)";
 	}
 }

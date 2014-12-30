@@ -19,8 +19,7 @@ public class PartyCommandExecutor implements CommandExecutor {
         plugin = instance;
     }
 
-    @SuppressWarnings("deprecation")
-	@Override
+    @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
